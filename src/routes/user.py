@@ -53,7 +53,8 @@ def register():
     # Create new user
     new_user = User(
         username=data['username'],
-        email=data['email']
+        email=data['email'],
+        currency=data.get('currency', 'USD')
     )
     new_user.set_password(data['password'])
     
@@ -107,6 +108,9 @@ def update_profile(current_user):
     
     if data.get('password'):
         current_user.set_password(data['password'])
+
+    if data.get('currency') and data['currency'] != current_user.currency:
+        current_user.currency = data['currency']
     
     db.session.commit()
     
