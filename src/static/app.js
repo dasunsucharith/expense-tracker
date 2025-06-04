@@ -22,8 +22,11 @@ document.addEventListener("DOMContentLoaded", function () {
 	// Set up event listeners
 	setupEventListeners();
 
-	// Set default date for expense form
-	document.getElementById("expense-date").valueAsDate = new Date();
+        // Set default date for expense form
+        document.getElementById("expense-date").valueAsDate = new Date();
+
+        // Initialize currency symbols with default or user currency
+        updateCurrencySymbols();
 });
 
 // Setup all event listeners
@@ -114,7 +117,8 @@ function handleLogin(e) {
 				// Save token and user data
 				token = data.token;
 				localStorage.setItem("token", token);
-				currentUser = data.user;
+                                currentUser = data.user;
+                                updateCurrencySymbols();
 
 				// Show dashboard
 				showDashboard();
@@ -208,11 +212,12 @@ function fetchUserProfile() {
 			}
 			return response.json();
 		})
-		.then((data) => {
-			currentUser = data;
-			showDashboard();
-			loadDashboardData();
-		})
+                .then((data) => {
+                        currentUser = data;
+                        updateCurrencySymbols();
+                        showDashboard();
+                        loadDashboardData();
+                })
 		.catch((error) => {
 			console.error("Profile fetch error:", error);
 			// Token invalid, show auth section
@@ -2066,8 +2071,21 @@ function showUserProfile(e) {
 }
 
 // Utility functions
+function getCurrencySymbol(currency) {
+        const symbols = {
+                USD: "$",
+                LKR: "Rs",
+                EUR: "€",
+                GBP: "£",
+        };
+        return symbols[currency] || "$";
+}
+
 function formatCurrency(amount) {
-	return "$" + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,");
+        const symbol = getCurrencySymbol(currentUser && currentUser.currency);
+        return (
+                symbol + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")
+        );
 }
 
 function formatDate(date) {
@@ -2103,7 +2121,14 @@ function getRandomColor(index) {
 		"#FFAA33",
 		"#808080",
 	];
-	return colors[index % colors.length];
+        return colors[index % colors.length];
+}
+
+function updateCurrencySymbols() {
+        const symbol = getCurrencySymbol(currentUser && currentUser.currency);
+        document.querySelectorAll(".currency-symbol").forEach((el) => {
+                el.textContent = symbol;
+        });
 }
 
 function toggleCustomDateRange() {
