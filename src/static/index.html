@@ -675,9 +675,19 @@
                                 <label class="form-label">Joined:</label>
                                 <span id="profile-created"></span>
                             </div>
+                            <div class="mb-3">
+                                <label for="profile-currency" class="form-label">Currency</label>
+                                <select class="form-select" id="profile-currency">
+                                    <option value="USD">$ USD</option>
+                                    <option value="EUR">€ EUR</option>
+                                    <option value="GBP">£ GBP</option>
+                                    <option value="LKR">Rs LKR</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="save-profile">Save</button>
                         </div>
                     </div>
                 </div>
