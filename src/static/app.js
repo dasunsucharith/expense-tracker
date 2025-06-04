@@ -91,10 +91,13 @@ function setupEventListeners() {
 		.getElementById("budget-period")
 		.addEventListener("change", toggleBudgetCustomDates);
 
-	// Profile
-	document
-		.getElementById("profile-link")
-		.addEventListener("click", showUserProfile);
+        // Profile
+        document
+                .getElementById("profile-link")
+                .addEventListener("click", showUserProfile);
+        document
+                .getElementById("save-profile")
+                .addEventListener("click", saveUserProfile);
 }
 
 // Authentication functions
@@ -2046,28 +2049,69 @@ function generateBudgetReport(startDate, endDate) {
 
 // Profile functions
 function showUserProfile(e) {
-	if (e) e.preventDefault();
+        if (e) e.preventDefault();
 	fetch(`${API_URL}/api/user/profile`, {
 		headers: {
 			Authorization: `Bearer ${token}`,
 		},
 	})
 		.then((response) => response.json())
-		.then((data) => {
-			document.getElementById("profile-username").textContent = data.username;
-			document.getElementById("profile-email").textContent = data.email;
-			document.getElementById("profile-created").textContent = new Date(
-				data.created_at
-			).toLocaleString();
-			// Show the Bootstrap modal
-			const modal = new bootstrap.Modal(
-				document.getElementById("profileModal")
-			);
-			modal.show();
-		})
-		.catch((error) => {
-			showToast("Failed to load profile", "error");
-		});
+                .then((data) => {
+                        document.getElementById("profile-username").textContent = data.username;
+                        document.getElementById("profile-email").textContent = data.email;
+                        document.getElementById("profile-created").textContent = new Date(
+                                data.created_at
+                        ).toLocaleString();
+                        document.getElementById("profile-currency").value = data.currency || "USD";
+                        // Show the Bootstrap modal
+                        const modal = new bootstrap.Modal(
+                                document.getElementById("profileModal")
+                        );
+                        modal.show();
+                })
+                .catch((error) => {
+                        showToast("Failed to load profile", "error");
+                });
+}
+
+function saveUserProfile() {
+        const currency = document.getElementById("profile-currency").value;
+
+        fetch(`${API_URL}/api/user/profile`, {
+                method: "PUT",
+                headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ currency }),
+        })
+                .then((response) => response.json())
+                .then((data) => {
+                        if (data.user) {
+                                currentUser = data.user;
+                                updateCurrencySymbols();
+
+                                // Refresh data on current page
+                                const active = document.querySelector('.nav-link.active[data-page]');
+                                if (active) {
+                                        navigateTo(active.getAttribute('data-page'));
+                                } else {
+                                        loadDashboardData();
+                                }
+
+                                const modal = bootstrap.Modal.getInstance(
+                                        document.getElementById("profileModal")
+                                );
+                                modal.hide();
+                                showToast("Profile updated", "success");
+                        } else {
+                                showToast(data.message || "Failed to update profile", "error");
+                        }
+                })
+                .catch((error) => {
+                        console.error("Profile update error:", error);
+                        showToast("Failed to update profile", "error");
+                });
 }
 
 // Utility functions
