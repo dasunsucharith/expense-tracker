@@ -4,63 +4,63 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Expense Tracker Dashboard</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
         <div id="app">
             <!-- Login/Register Section -->
-            <div id="auth-section" class="container mt-5">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card shadow">
-                            <div class="card-body">
-                                <ul class="nav nav-tabs" id="authTabs" role="tablist">
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab" aria-controls="login"
+            <div id="auth-section" class="mt-10">
+                <div class="flex justify-center">
+                    <div class="w-full max-w-md">
+                        <div class="bg-white shadow rounded-lg">
+                            <div class="p-6">
+                                <ul class="flex border-b mb-4" id="authTabs" role="tablist">
+                                    <li class="mr-4" role="presentation">
+                                        <button class="py-2 px-4 border-b-2 font-semibold text-blue-600" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab" aria-controls="login"
                                             aria-selected="true">Login</button>
                                     </li>
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button" role="tab" aria-controls="register"
+                                    <li role="presentation">
+                                        <button class="py-2 px-4 text-gray-500" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button" role="tab" aria-controls="register"
                                             aria-selected="false">Register</button>
                                     </li>
                                 </ul>
-                                <div class="tab-content mt-3" id="authTabsContent">
+                                <div class="tab-content" id="authTabsContent">
                                     <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
-                                        <form id="login-form">
-                                            <div class="mb-3">
-                                                <label for="login-username" class="form-label">Username</label>
-                                                <input type="text" class="form-control" id="login-username" required>
+                                        <form id="login-form" class="space-y-4">
+                                            <div>
+                                                <label for="login-username" class="block text-sm font-medium">Username</label>
+                                                <input type="text" class="mt-1 w-full border rounded px-3 py-2" id="login-username" required>
                                             </div>
-                                            <div class="mb-3">
-                                                <label for="login-password" class="form-label">Password</label>
-                                                <input type="password" class="form-control" id="login-password" required>
+                                            <div>
+                                                <label for="login-password" class="block text-sm font-medium">Password</label>
+                                                <input type="password" class="mt-1 w-full border rounded px-3 py-2" id="login-password" required>
                                             </div>
-                                            <div class="alert alert-danger d-none" id="login-error"></div>
-                                            <button type="submit" class="btn btn-primary w-100">Login</button>
+                                            <div class="text-red-600 hidden" id="login-error"></div>
+                                            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded">Login</button>
                                         </form>
                                     </div>
                                     <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
-                                        <form id="register-form">
-                                            <div class="mb-3">
-                                                <label for="register-username" class="form-label">Username</label>
-                                                <input type="text" class="form-control" id="register-username" required>
+                                        <form id="register-form" class="space-y-4">
+                                            <div>
+                                                <label for="register-username" class="block text-sm font-medium">Username</label>
+                                                <input type="text" class="mt-1 w-full border rounded px-3 py-2" id="register-username" required>
                                             </div>
-                                            <div class="mb-3">
-                                                <label for="register-email" class="form-label">Email</label>
-                                                <input type="email" class="form-control" id="register-email" required>
+                                            <div>
+                                                <label for="register-email" class="block text-sm font-medium">Email</label>
+                                                <input type="email" class="mt-1 w-full border rounded px-3 py-2" id="register-email" required>
                                             </div>
-                                            <div class="mb-3">
-                                                <label for="register-password" class="form-label">Password</label>
-                                                <input type="password" class="form-control" id="register-password" required>
+                                            <div>
+                                                <label for="register-password" class="block text-sm font-medium">Password</label>
+                                                <input type="password" class="mt-1 w-full border rounded px-3 py-2" id="register-password" required>
                                             </div>
-                                            <div class="mb-3">
-                                                <label for="register-confirm-password" class="form-label">Confirm Password</label>
-                                                <input type="password" class="form-control" id="register-confirm-password" required>
+                                            <div>
+                                                <label for="register-confirm-password" class="block text-sm font-medium">Confirm Password</label>
+                                                <input type="password" class="mt-1 w-full border rounded px-3 py-2" id="register-confirm-password" required>
                                             </div>
-                                            <div class="alert alert-danger d-none" id="register-error"></div>
-                                            <button type="submit" class="btn btn-primary w-100">Register</button>
+                                            <div class="text-red-600 hidden" id="register-error"></div>
+                                            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded">Register</button>
                                         </form>
                                     </div>
                                 </div>
@@ -73,17 +73,14 @@
             <!-- Main Dashboard Section (Hidden initially) -->
             <div id="dashboard-section" class="d-none">
                 <!-- Navigation -->
-                <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-                    <div class="container-fluid">
-                        <a class="navbar-brand" href="#">
-                            <i class="fas fa-wallet me-2"></i>
+                <nav class="bg-blue-600 text-white">
+                    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+                        <a class="flex items-center font-bold" href="#">
+                            <i class="fas fa-wallet mr-2"></i>
                             Expense Tracker
                         </a>
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarNav">
-                            <ul class="navbar-nav">
+                        <div class="space-x-4" id="navbarNav">
+                            <ul class="flex space-x-4">
                                 <li class="nav-item">
                                     <a class="nav-link active" href="#" data-page="dashboard">Dashboard</a>
                                 </li>
@@ -97,15 +94,15 @@
                                     <a class="nav-link" href="#" data-page="reports">Reports</a>
                                 </li>
                             </ul>
-                            <ul class="navbar-nav ms-auto">
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-user-circle me-1"></i>
+                            <ul class="flex space-x-4 ml-auto items-center">
+                                <li class="relative">
+                                    <button class="flex items-center focus:outline-none" id="userDropdown" data-bs-toggle="dropdown">
+                                        <i class="fas fa-user-circle mr-1"></i>
                                         <span id="username-display">User</span>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item" href="#" id="profile-link">Profile</a></li>
-                                        <li><a class="dropdown-item" href="#" id="logout-link">Logout</a></li>
+                                    </button>
+                                    <ul class="absolute right-0 mt-2 w-32 bg-white text-gray-700 rounded shadow-lg hidden" id="userDropdownMenu">
+                                        <li><a class="block px-4 py-2 hover:bg-gray-100" href="#" id="profile-link">Profile</a></li>
+                                        <li><a class="block px-4 py-2 hover:bg-gray-100" href="#" id="logout-link">Logout</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -114,118 +111,90 @@
                 </nav>
 
                 <!-- Content Container -->
-                <div class="container-fluid mt-4">
+                <div class="max-w-7xl mx-auto mt-4 px-4">
                     <!-- Dashboard Page -->
                     <div id="dashboard-page" class="dashboard-page">
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <h2>Dashboard</h2>
-                                <p class="text-muted">Welcome to your expense tracker dashboard</p>
-                            </div>
+                        <div class="mb-4">
+                            <h2 class="text-2xl font-semibold">Dashboard</h2>
+                            <p class="text-gray-500">Welcome to your expense tracker dashboard</p>
                         </div>
 
                         <!-- Summary Cards -->
-                        <div class="row mb-4">
-                            <div class="col-md-3">
-                                <div class="card bg-primary text-white">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Total Expenses</h5>
-                                        <h2 class="card-text" id="total-expenses"><span class="currency-symbol"></span>0.00</h2>
-                                        <p class="card-text"><small id="expense-period">This month</small></p>
-                                    </div>
-                                </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                            <div class="bg-blue-600 text-white rounded shadow p-4">
+                                <h5 class="text-sm">Total Expenses</h5>
+                                <h2 class="text-2xl" id="total-expenses"><span class="currency-symbol"></span>0.00</h2>
+                                <p class="text-xs" id="expense-period">This month</p>
                             </div>
-                            <div class="col-md-3">
-                                <div class="card bg-success text-white">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Budget Remaining</h5>
-                                        <h2 class="card-text" id="budget-remaining"><span class="currency-symbol"></span>0.00</h2>
-                                        <p class="card-text"><small id="budget-period">This month</small></p>
-                                    </div>
-                                </div>
+                            <div class="bg-green-500 text-white rounded shadow p-4">
+                                <h5 class="text-sm">Budget Remaining</h5>
+                                <h2 class="text-2xl" id="budget-remaining"><span class="currency-symbol"></span>0.00</h2>
+                                <p class="text-xs" id="budget-period">This month</p>
                             </div>
-                            <div class="col-md-3">
-                                <div class="card bg-info text-white">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Expense Count</h5>
-                                        <h2 class="card-text" id="expense-count">0</h2>
-                                        <p class="card-text"><small>This month</small></p>
-                                    </div>
-                                </div>
+                            <div class="bg-sky-500 text-white rounded shadow p-4">
+                                <h5 class="text-sm">Expense Count</h5>
+                                <h2 class="text-2xl" id="expense-count">0</h2>
+                                <p class="text-xs">This month</p>
                             </div>
-                            <div class="col-md-3">
-                                <div class="card bg-warning text-white">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Active Budgets</h5>
-                                        <h2 class="card-text" id="active-budgets">0</h2>
-                                        <p class="card-text"><small>Currently active</small></p>
-                                    </div>
-                                </div>
+                            <div class="bg-yellow-500 text-white rounded shadow p-4">
+                                <h5 class="text-sm">Active Budgets</h5>
+                                <h2 class="text-2xl" id="active-budgets">0</h2>
+                                <p class="text-xs">Currently active</p>
                             </div>
                         </div>
 
                         <!-- Charts Row -->
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <div class="card shadow-sm">
-                                    <div class="card-header bg-light">
-                                        <h5 class="card-title mb-0">Expenses by Category</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <canvas id="expenses-by-category-chart" height="300"></canvas>
-                                    </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-white shadow rounded">
+                                <div class="px-4 py-2 border-b">
+                                    <h5 class="font-medium mb-0">Expenses by Category</h5>
+                                </div>
+                                <div class="p-4">
+                                    <canvas id="expenses-by-category-chart" height="300"></canvas>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card shadow-sm">
-                                    <div class="card-header bg-light">
-                                        <h5 class="card-title mb-0">Budget vs. Actual</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <canvas id="budget-vs-actual-chart" height="300"></canvas>
-                                    </div>
+                            <div class="bg-white shadow rounded">
+                                <div class="px-4 py-2 border-b">
+                                    <h5 class="font-medium mb-0">Budget vs. Actual</h5>
+                                </div>
+                                <div class="p-4">
+                                    <canvas id="budget-vs-actual-chart" height="300"></canvas>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Recent Expenses and Budget Status -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="card shadow-sm">
-                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title mb-0">Recent Expenses</h5>
-                                        <a href="#" class="btn btn-sm btn-primary" data-page="expenses">View All</a>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Date</th>
-                                                        <th>Category</th>
-                                                        <th>Description</th>
-                                                        <th>Amount</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="recent-expenses-table">
-                                                    <!-- Expenses will be loaded here -->
-                                                </tbody>
-                                            </table>
-                                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white shadow rounded">
+                                <div class="px-4 py-2 border-b flex justify-between items-center">
+                                    <h5 class="font-medium mb-0">Recent Expenses</h5>
+                                    <a href="#" class="text-sm text-blue-600" data-page="expenses">View All</a>
+                                </div>
+                                <div class="p-4">
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full text-sm">
+                                            <thead>
+                                                <tr class="bg-gray-50">
+                                                    <th class="px-2 py-1">Date</th>
+                                                    <th class="px-2 py-1">Category</th>
+                                                    <th class="px-2 py-1">Description</th>
+                                                    <th class="px-2 py-1">Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="recent-expenses-table">
+                                                <!-- Expenses will be loaded here -->
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card shadow-sm">
-                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title mb-0">Budget Status</h5>
-                                        <a href="#" class="btn btn-sm btn-primary" data-page="budgets">View All</a>
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="budget-status-container">
-                                            <!-- Budget progress bars will be loaded here -->
-                                        </div>
-                                    </div>
+                            <div class="bg-white shadow rounded">
+                                <div class="px-4 py-2 border-b flex justify-between items-center">
+                                    <h5 class="font-medium mb-0">Budget Status</h5>
+                                    <a href="#" class="text-sm text-blue-600" data-page="budgets">View All</a>
+                                </div>
+                                <div class="p-4" id="budget-status-container">
+                                    <!-- Budget progress bars will be loaded here -->
                                 </div>
                             </div>
                         </div>
@@ -233,56 +202,54 @@
 
                     <!-- Expenses Page -->
                     <div id="expenses-page" class="dashboard-page d-none">
-                        <div class="row mb-4">
-                            <div class="col-md-8">
-                                <h2>Expenses</h2>
-                                <p class="text-muted">Manage your expenses</p>
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                            <div>
+                                <h2 class="text-2xl font-semibold">Expenses</h2>
+                                <p class="text-gray-500">Manage your expenses</p>
                             </div>
-                            <div class="col-md-4 text-end">
-                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
-                                    <i class="fas fa-plus me-1"></i> Add Expense
+                            <div class="mt-2 md:mt-0">
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                                    <i class="fas fa-plus mr-1"></i> Add Expense
                                 </button>
                             </div>
                         </div>
 
                         <!-- Filters -->
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <label for="expense-date-filter" class="form-label">Date Range</label>
-                                                <select class="form-select" id="expense-date-filter">
-                                                    <option value="this-month">This Month</option>
-                                                    <option value="last-month">Last Month</option>
-                                                    <option value="last-3-months">Last 3 Months</option>
-                                                    <option value="this-year">This Year</option>
-                                                    <option value="custom">Custom Range</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label for="expense-category-filter" class="form-label">Category</label>
-                                                <select class="form-select" id="expense-category-filter">
-                                                    <option value="">All Categories</option>
-                                                    <!-- Categories will be loaded here -->
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4 d-none" id="custom-date-range">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <label for="expense-start-date" class="form-label">Start Date</label>
-                                                        <input type="date" class="form-control" id="expense-start-date">
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label for="expense-end-date" class="form-label">End Date</label>
-                                                        <input type="date" class="form-control" id="expense-end-date">
-                                                    </div>
+                        <div class="mb-4">
+                            <div class="bg-white shadow rounded">
+                                <div class="p-4">
+                                    <div class="grid md:grid-cols-12 gap-4">
+                                        <div class="md:col-span-3">
+                                            <label for="expense-date-filter" class="block text-sm font-medium">Date Range</label>
+                                            <select class="mt-1 w-full border rounded px-3 py-2" id="expense-date-filter">
+                                                <option value="this-month">This Month</option>
+                                                <option value="last-month">Last Month</option>
+                                                <option value="last-3-months">Last 3 Months</option>
+                                                <option value="this-year">This Year</option>
+                                                <option value="custom">Custom Range</option>
+                                            </select>
+                                        </div>
+                                        <div class="md:col-span-3">
+                                            <label for="expense-category-filter" class="block text-sm font-medium">Category</label>
+                                            <select class="mt-1 w-full border rounded px-3 py-2" id="expense-category-filter">
+                                                <option value="">All Categories</option>
+                                                <!-- Categories will be loaded here -->
+                                            </select>
+                                        </div>
+                                        <div class="md:col-span-4 hidden" id="custom-date-range">
+                                            <div class="grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label for="expense-start-date" class="block text-sm font-medium">Start Date</label>
+                                                    <input type="date" class="mt-1 w-full border rounded px-3 py-2" id="expense-start-date">
+                                                </div>
+                                                <div>
+                                                    <label for="expense-end-date" class="block text-sm font-medium">End Date</label>
+                                                    <input type="date" class="mt-1 w-full border rounded px-3 py-2" id="expense-end-date">
                                                 </div>
                                             </div>
-                                            <div class="col-md-2 d-flex align-items-end">
-                                                <button class="btn btn-primary w-100" id="apply-expense-filters">Apply Filters</button>
-                                            </div>
+                                        </div>
+                                        <div class="md:col-span-2 flex items-end">
+                                            <button class="bg-blue-600 text-white px-4 py-2 rounded w-full" id="apply-expense-filters">Apply Filters</button>
                                         </div>
                                     </div>
                                 </div>
@@ -290,30 +257,26 @@
                         </div>
 
                         <!-- Expenses Table -->
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Date</th>
-                                                        <th>Category</th>
-                                                        <th>Description</th>
-                                                        <th>Amount</th>
-                                                        <th>Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="expenses-table">
-                                                    <!-- Expenses will be loaded here -->
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div id="expenses-pagination" class="d-flex justify-content-center mt-3">
-                                            <!-- Pagination will be added here -->
-                                        </div>
-                                    </div>
+                        <div class="bg-white shadow rounded">
+                            <div class="p-4">
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full text-sm">
+                                        <thead>
+                                            <tr class="bg-gray-50">
+                                                <th class="px-2 py-1">Date</th>
+                                                <th class="px-2 py-1">Category</th>
+                                                <th class="px-2 py-1">Description</th>
+                                                <th class="px-2 py-1">Amount</th>
+                                                <th class="px-2 py-1">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="expenses-table">
+                                            <!-- Expenses will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="expenses-pagination" class="flex justify-center mt-3">
+                                    <!-- Pagination will be added here -->
                                 </div>
                             </div>
                         </div>
@@ -321,62 +284,54 @@
 
                     <!-- Budgets Page -->
                     <div id="budgets-page" class="dashboard-page d-none">
-                        <div class="row mb-4">
-                            <div class="col-md-8">
-                                <h2>Budgets</h2>
-                                <p class="text-muted">Manage your budgets</p>
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                            <div>
+                                <h2 class="text-2xl font-semibold">Budgets</h2>
+                                <p class="text-gray-500">Manage your budgets</p>
                             </div>
-                            <div class="col-md-4 text-end">
-                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBudgetModal">
-                                    <i class="fas fa-plus me-1"></i> Add Budget
+                            <div class="mt-2 md:mt-0">
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded" data-bs-toggle="modal" data-bs-target="#addBudgetModal">
+                                    <i class="fas fa-plus mr-1"></i> Add Budget
                                 </button>
                             </div>
                         </div>
 
                         <!-- Active Budgets -->
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-header bg-light">
-                                        <h5 class="card-title mb-0">Active Budgets</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="active-budgets-container">
-                                            <!-- Active budgets will be loaded here -->
-                                        </div>
-                                    </div>
+                        <div class="mb-4">
+                            <div class="bg-white shadow rounded">
+                                <div class="px-4 py-2 border-b">
+                                    <h5 class="font-medium mb-0">Active Budgets</h5>
+                                </div>
+                                <div class="p-4" id="active-budgets-container">
+                                    <!-- Active budgets will be loaded here -->
                                 </div>
                             </div>
                         </div>
 
                         <!-- All Budgets -->
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-header bg-light">
-                                        <h5 class="card-title mb-0">All Budgets</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Name</th>
-                                                        <th>Category</th>
-                                                        <th>Period</th>
-                                                        <th>Amount</th>
-                                                        <th>Spent</th>
-                                                        <th>Remaining</th>
-                                                        <th>Status</th>
-                                                        <th>Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="budgets-table">
-                                                    <!-- Budgets will be loaded here -->
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                        <div class="bg-white shadow rounded">
+                            <div class="px-4 py-2 border-b">
+                                <h5 class="font-medium mb-0">All Budgets</h5>
+                            </div>
+                            <div class="p-4">
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full text-sm">
+                                        <thead>
+                                            <tr class="bg-gray-50">
+                                                <th class="px-2 py-1">Name</th>
+                                                <th class="px-2 py-1">Category</th>
+                                                <th class="px-2 py-1">Period</th>
+                                                <th class="px-2 py-1">Amount</th>
+                                                <th class="px-2 py-1">Spent</th>
+                                                <th class="px-2 py-1">Remaining</th>
+                                                <th class="px-2 py-1">Status</th>
+                                                <th class="px-2 py-1">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="budgets-table">
+                                            <!-- Budgets will be loaded here -->
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -384,53 +339,49 @@
 
                     <!-- Reports Page -->
                     <div id="reports-page" class="dashboard-page d-none">
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <h2>Reports</h2>
-                                <p class="text-muted">Analyze your spending patterns</p>
-                            </div>
+                        <div class="mb-4">
+                            <h2 class="text-2xl font-semibold">Reports</h2>
+                            <p class="text-gray-500">Analyze your spending patterns</p>
                         </div>
 
                         <!-- Report Filters -->
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <label for="report-type" class="form-label">Report Type</label>
-                                                <select class="form-select" id="report-type">
-                                                    <option value="category">Spending by Category</option>
-                                                    <option value="time">Spending Over Time</option>
-                                                    <option value="budget">Budget Performance</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label for="report-period" class="form-label">Time Period</label>
-                                                <select class="form-select" id="report-period">
-                                                    <option value="this-month">This Month</option>
-                                                    <option value="last-month">Last Month</option>
-                                                    <option value="last-3-months">Last 3 Months</option>
-                                                    <option value="this-year">This Year</option>
-                                                    <option value="last-year">Last Year</option>
-                                                    <option value="custom">Custom Range</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4 d-none" id="report-custom-date-range">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <label for="report-start-date" class="form-label">Start Date</label>
-                                                        <input type="date" class="form-control" id="report-start-date">
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label for="report-end-date" class="form-label">End Date</label>
-                                                        <input type="date" class="form-control" id="report-end-date">
-                                                    </div>
+                        <div class="mb-4">
+                            <div class="bg-white shadow rounded">
+                                <div class="p-4">
+                                    <div class="grid md:grid-cols-12 gap-4">
+                                        <div class="md:col-span-3">
+                                            <label for="report-type" class="block text-sm font-medium">Report Type</label>
+                                            <select class="mt-1 w-full border rounded px-3 py-2" id="report-type">
+                                                <option value="category">Spending by Category</option>
+                                                <option value="time">Spending Over Time</option>
+                                                <option value="budget">Budget Performance</option>
+                                            </select>
+                                        </div>
+                                        <div class="md:col-span-3">
+                                            <label for="report-period" class="block text-sm font-medium">Time Period</label>
+                                            <select class="mt-1 w-full border rounded px-3 py-2" id="report-period">
+                                                <option value="this-month">This Month</option>
+                                                <option value="last-month">Last Month</option>
+                                                <option value="last-3-months">Last 3 Months</option>
+                                                <option value="this-year">This Year</option>
+                                                <option value="last-year">Last Year</option>
+                                                <option value="custom">Custom Range</option>
+                                            </select>
+                                        </div>
+                                        <div class="md:col-span-4 hidden" id="report-custom-date-range">
+                                            <div class="grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label for="report-start-date" class="block text-sm font-medium">Start Date</label>
+                                                    <input type="date" class="mt-1 w-full border rounded px-3 py-2" id="report-start-date">
+                                                </div>
+                                                <div>
+                                                    <label for="report-end-date" class="block text-sm font-medium">End Date</label>
+                                                    <input type="date" class="mt-1 w-full border rounded px-3 py-2" id="report-end-date">
                                                 </div>
                                             </div>
-                                            <div class="col-md-2 d-flex align-items-end">
-                                                <button class="btn btn-primary w-100" id="generate-report">Generate Report</button>
-                                            </div>
+                                        </div>
+                                        <div class="md:col-span-2 flex items-end">
+                                            <button class="bg-blue-600 text-white px-4 py-2 rounded w-full" id="generate-report">Generate Report</button>
                                         </div>
                                     </div>
                                 </div>
@@ -438,22 +389,18 @@
                         </div>
 
                         <!-- Report Results -->
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-header bg-light">
-                                        <h5 class="card-title mb-0" id="report-title">Report Results</h5>
+                        <div class="bg-white shadow rounded">
+                            <div class="px-4 py-2 border-b">
+                                <h5 class="font-medium mb-0" id="report-title">Report Results</h5>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid md:grid-cols-3 gap-4">
+                                    <div class="md:col-span-2">
+                                        <canvas id="report-chart" height="400"></canvas>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-8">
-                                                <canvas id="report-chart" height="400"></canvas>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div id="report-summary">
-                                                    <!-- Report summary will be loaded here -->
-                                                </div>
-                                            </div>
+                                    <div>
+                                        <div id="report-summary">
+                                            <!-- Report summary will be loaded here -->
                                         </div>
                                     </div>
                                 </div>
