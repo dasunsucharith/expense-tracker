@@ -9,95 +9,98 @@ let charts = {};
 
 // Initialize the application
 document.addEventListener("DOMContentLoaded", function () {
-	// Set API URL based on current location
-	API_URL = window.location.origin;
+        // Set API URL based on current location
+        API_URL = window.location.origin;
 
-	// Check if user is logged in
-	if (token) {
-		fetchUserProfile();
-	} else {
-		showAuthSection();
-	}
-
-	// Set up event listeners
-	setupEventListeners();
-
-        // Set default date for expense form
-        document.getElementById("expense-date").valueAsDate = new Date();
+        // Set up event listeners
+        setupEventListeners();
 
         // Initialize currency symbols with default or user currency
         updateCurrencySymbols();
+
+        const dashboardSection = document.getElementById("dashboard-section");
+        const authSection = document.getElementById("auth-section");
+
+        if (dashboardSection) {
+                if (token) {
+                        fetchUserProfile();
+                        const expenseDate = document.getElementById("expense-date");
+                        if (expenseDate) expenseDate.valueAsDate = new Date();
+                } else {
+                        showAuthSection();
+                }
+        } else if (authSection) {
+                if (token) {
+                        showDashboard();
+                }
+        }
 });
 
 // Setup all event listeners
 function setupEventListeners() {
-	// Auth forms
-	document.getElementById("login-form").addEventListener("submit", handleLogin);
-	document
-		.getElementById("register-form")
-		.addEventListener("submit", handleRegister);
+        // Auth forms
+        const loginForm = document.getElementById("login-form");
+        if (loginForm) loginForm.addEventListener("submit", handleLogin);
+
+        const registerForm = document.getElementById("register-form");
+        if (registerForm) registerForm.addEventListener("submit", handleRegister);
 
 	// Navigation
-	document.querySelectorAll(".nav-link[data-page]").forEach((link) => {
-		link.addEventListener("click", function (e) {
-			e.preventDefault();
-			navigateTo(this.getAttribute("data-page"));
-		});
-	});
+        document.querySelectorAll(".nav-link[data-page]").forEach((link) => {
+                link.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        navigateTo(this.getAttribute("data-page"));
+                });
+        });
 
 	// Logout
-	document
-		.getElementById("logout-link")
-		.addEventListener("click", handleLogout);
+        const logoutLink = document.getElementById("logout-link");
+        if (logoutLink) logoutLink.addEventListener("click", handleLogout);
 
 	// Expense form
-	document
-		.getElementById("save-expense")
-		.addEventListener("click", saveExpense);
-	document
-		.getElementById("update-expense")
-		.addEventListener("click", updateExpense);
-	document
-		.getElementById("delete-expense")
-		.addEventListener("click", deleteExpense);
+        const saveExpenseBtn = document.getElementById("save-expense");
+        if (saveExpenseBtn) saveExpenseBtn.addEventListener("click", saveExpense);
+
+        const updateExpenseBtn = document.getElementById("update-expense");
+        if (updateExpenseBtn) updateExpenseBtn.addEventListener("click", updateExpense);
+
+        const deleteExpenseBtn = document.getElementById("delete-expense");
+        if (deleteExpenseBtn) deleteExpenseBtn.addEventListener("click", deleteExpense);
 
 	// Budget form
-	document.getElementById("save-budget").addEventListener("click", saveBudget);
-	document
-		.getElementById("update-budget")
-		.addEventListener("click", updateBudget);
-	document
-		.getElementById("delete-budget")
-		.addEventListener("click", deleteBudget);
+        const saveBudgetBtn = document.getElementById("save-budget");
+        if (saveBudgetBtn) saveBudgetBtn.addEventListener("click", saveBudget);
+
+        const updateBudgetBtn = document.getElementById("update-budget");
+        if (updateBudgetBtn) updateBudgetBtn.addEventListener("click", updateBudget);
+
+        const deleteBudgetBtn = document.getElementById("delete-budget");
+        if (deleteBudgetBtn) deleteBudgetBtn.addEventListener("click", deleteBudget);
 
 	// Filters
-	document
-		.getElementById("expense-date-filter")
-		.addEventListener("change", toggleCustomDateRange);
-	document
-		.getElementById("apply-expense-filters")
-		.addEventListener("click", loadExpenses);
+        const expenseDateFilter = document.getElementById("expense-date-filter");
+        if (expenseDateFilter) expenseDateFilter.addEventListener("change", toggleCustomDateRange);
+
+        const applyExpenseFilters = document.getElementById("apply-expense-filters");
+        if (applyExpenseFilters) applyExpenseFilters.addEventListener("click", loadExpenses);
 
 	// Reports
-	document
-		.getElementById("report-period")
-		.addEventListener("change", toggleReportCustomDateRange);
-	document
-		.getElementById("generate-report")
-		.addEventListener("click", generateReport);
+        const reportPeriod = document.getElementById("report-period");
+        if (reportPeriod) reportPeriod.addEventListener("change", toggleReportCustomDateRange);
+
+        const generateReportBtn = document.getElementById("generate-report");
+        if (generateReportBtn) generateReportBtn.addEventListener("click", generateReport);
 
 	// Budget period selection
-	document
-		.getElementById("budget-period")
-		.addEventListener("change", toggleBudgetCustomDates);
+        const budgetPeriod = document.getElementById("budget-period");
+        if (budgetPeriod) budgetPeriod.addEventListener("change", toggleBudgetCustomDates);
 
         // Profile
-        document
-                .getElementById("profile-link")
-                .addEventListener("click", showUserProfile);
-        document
-                .getElementById("save-profile")
-                .addEventListener("click", saveUserProfile);
+        const profileLink = document.getElementById("profile-link");
+        if (profileLink) profileLink.addEventListener("click", showUserProfile);
+
+        const saveProfileBtn = document.getElementById("save-profile");
+        if (saveProfileBtn) saveProfileBtn.addEventListener("click", saveUserProfile);
 }
 
 // Authentication functions
@@ -124,8 +127,7 @@ function handleLogin(e) {
                                 updateCurrencySymbols();
 
 				// Show dashboard
-				showDashboard();
-				loadDashboardData();
+                                showDashboard();
 			} else {
 				// Show error
 				const errorElement = document.getElementById("login-error");
@@ -219,7 +221,6 @@ function fetchUserProfile() {
                         currentUser = data;
                         updateCurrencySymbols();
                         showDashboard();
-                        loadDashboardData();
                 })
 		.catch((error) => {
 			console.error("Profile fetch error:", error);
@@ -232,20 +233,36 @@ function fetchUserProfile() {
 
 // UI functions
 function showAuthSection() {
-	document.getElementById("auth-section").classList.remove("d-none");
-	document.getElementById("dashboard-section").classList.add("d-none");
+        const authSection = document.getElementById("auth-section");
+        const dashboardSection = document.getElementById("dashboard-section");
+
+        if (authSection) {
+                authSection.classList.remove("d-none");
+                if (dashboardSection) dashboardSection.classList.add("d-none");
+        } else {
+                window.location.href = "/";
+        }
 }
 
 function showDashboard() {
-	document.getElementById("auth-section").classList.add("d-none");
-	document.getElementById("dashboard-section").classList.remove("d-none");
+        const authSection = document.getElementById("auth-section");
+        const dashboardSection = document.getElementById("dashboard-section");
 
-	// Set username in navbar
-	document.getElementById("username-display").textContent =
-		currentUser.username;
+        if (dashboardSection) {
+                if (authSection) authSection.classList.add("d-none");
+                dashboardSection.classList.remove("d-none");
 
-	// Show dashboard page by default
-	navigateTo("dashboard");
+                // Set username in navbar
+                const usernameDisplay = document.getElementById("username-display");
+                if (usernameDisplay && currentUser) {
+                        usernameDisplay.textContent = currentUser.username;
+                }
+
+                // Show dashboard page by default
+                navigateTo("dashboard");
+        } else {
+                window.location.href = "/dashboard";
+        }
 }
 
 function navigateTo(page) {
