@@ -258,7 +258,6 @@ function fetchUserProfile() {
 }
 
 // UI functions
-}
 
 function loadCategories() {
 	return fetch(`${API_URL}/api/expense/categories`, {
