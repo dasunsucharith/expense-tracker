@@ -7,13 +7,42 @@ let expenses = [];
 let budgets = [];
 let charts = {};
 
+// Cookie helpers
+function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(";");
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === " ") c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+function eraseCookie(name) {
+    document.cookie = name + "=; Max-Age=-99999999; path=/";
+}
+
 // Initialize the application
 document.addEventListener("DOMContentLoaded", function () {
         API_URL = window.location.origin;
         setupEventListeners();
         updateCurrencySymbols();
-        token = localStorage.getItem("token");
-        if (token) { fetchUserProfile(); }
+        token = localStorage.getItem("token") || getCookie("token");
+        if (token) {
+            localStorage.setItem("token", token);
+            fetchUserProfile();
+        }
         const dashboardPage = document.getElementById("dashboard-page");
         const expensesPage = document.getElementById("expenses-page");
         const budgetsPage = document.getElementById("budgets-page");
@@ -121,6 +150,7 @@ function handleLogin(e) {
                         if (data.token) {
                                 // Save token and user data
                                 token = data.token;
+                                setCookie("token", token, 1);
                                 localStorage.setItem("token", token);
                                 currentUser = data.user;
                                 updateCurrencySymbols();
@@ -188,12 +218,13 @@ function handleRegister(e) {
 }
 
 function handleLogout(e) {
-	e.preventDefault();
+        e.preventDefault();
 
-	// Clear token and user data
-	token = null;
-	localStorage.removeItem("token");
-	currentUser = null;
+        // Clear token and user data
+        token = null;
+        localStorage.removeItem("token");
+        eraseCookie("token");
+        currentUser = null;
 
         window.location.href = "/login";
 }

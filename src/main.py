@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from flask import Flask, send_from_directory, jsonify
 from src.models.user import db
-from src.routes.user import user_bp
+from src.routes.user import user_bp, login_required
 from src.routes.expense import expense_bp
 from src.routes.budget import budget_bp
 from flask_cors import CORS
@@ -72,26 +72,31 @@ def register_page():
 
 
 @app.route('/dashboard')
+@login_required
 def dashboard_page():
     return send_from_directory(app.static_folder, 'dashboard.html')
 
 
 @app.route('/expenses')
+@login_required
 def expenses_page():
     return send_from_directory(app.static_folder, 'expenses.html')
 
 
 @app.route('/budgets')
+@login_required
 def budgets_page():
     return send_from_directory(app.static_folder, 'budgets.html')
 
 
 @app.route('/reports')
+@login_required
 def reports_page():
     return send_from_directory(app.static_folder, 'reports.html')
 
 
 @app.route('/profile')
+@login_required
 def profile_page():
     return send_from_directory(app.static_folder, 'profile.html')
 

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
@@ -35,6 +35,29 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
     
     return decorated
+
+# Decorator for protected HTML pages
+def login_required(f):
+    """Redirect to the login page if the JWT is missing or invalid."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        token = request.cookies.get('token')
+        if not token and 'Authorization' in request.headers:
+            auth_header = request.headers['Authorization']
+            if auth_header.startswith('Bearer '):
+                token = auth_header.split(' ')[1]
+
+        if not token:
+            return redirect('/login')
+
+        try:
+            jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        except Exception:
+            return redirect('/login')
+
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 @user_bp.route('/register', methods=['POST'])
 def register():
