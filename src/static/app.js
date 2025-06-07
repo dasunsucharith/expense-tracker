@@ -963,9 +963,26 @@ function initializeCharts() {
 				},
 			});
 		})
-		.catch((error) => {
-			console.error("Error loading chart data:", error);
-		});
+                .catch((error) => {
+                        console.error("Error loading chart data:", error);
+                });
+}
+
+// Load all data needed for the dashboard
+function loadDashboardData() {
+        return loadCategories()
+                .then(() =>
+                        Promise.all([
+                                loadDashboardSummary(),
+                                loadRecentExpenses(),
+                                loadBudgetStatus(),
+                        ])
+                )
+                .then(() => initializeCharts())
+                .catch((error) => {
+                        console.error("Error loading dashboard data:", error);
+                        showToast("Failed to load dashboard data", "error");
+                });
 }
 
 // Expense CRUD functions
