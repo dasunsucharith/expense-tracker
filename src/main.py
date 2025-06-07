@@ -58,21 +58,23 @@ with app.app_context():
         db.session.commit()
         print("Default categories created")
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def serve(path):
-    static_folder_path = app.static_folder
-    if static_folder_path is None:
-            return "Static folder not configured", 404
+@app.route('/')
+def index():
+    return send_from_directory(app.static_folder, 'index.html')
 
-    if path != "" and os.path.exists(os.path.join(static_folder_path, path)):
-        return send_from_directory(static_folder_path, path)
+
+@app.route('/dashboard')
+def dashboard_page():
+    return send_from_directory(app.static_folder, 'dashboard.html')
+
+
+@app.route('/<path:filename>')
+def static_files(filename):
+    file_path = os.path.join(app.static_folder, filename)
+    if os.path.exists(file_path):
+        return send_from_directory(app.static_folder, filename)
     else:
-        index_path = os.path.join(static_folder_path, 'index.html')
-        if os.path.exists(index_path):
-            return send_from_directory(static_folder_path, 'index.html')
-        else:
-            return "index.html not found", 404
+        return jsonify({"message": "Resource not found"}), 404
 
 @app.errorhandler(404)
 def not_found(e):
