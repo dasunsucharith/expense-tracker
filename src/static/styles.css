@@ -138,28 +138,6 @@ body {
 #auth-section .card {
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-}
-
-.auth-image {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-    border-top-left-radius: 15px;
-    border-bottom-left-radius: 15px;
-}
-
-@media (min-width: 768px) {
-    #auth-section .card {
-        flex-direction: row;
-    }
-}
-
-@media (max-width: 767.98px) {
-    .auth-image {
-        display: none;
-    }
 }
 
 .nav-tabs .nav-link {
