@@ -6,8 +6,9 @@ The Expense Calculator Web Dashboard is a comprehensive financial management too
 
 ## Accessing the Dashboard
 
-Access the dashboard using the following URL:
-https://5000-iji5ie1544il0ek0efru2-e86c771f.manusvm.computer
+Navigate to the application root URL. You will land on `/` which provides links to
+`/login` and `/register`. After logging in you can access the dashboard at
+`/dashboard` as well as `/expenses`, `/budgets`, `/reports` and `/profile`.
 
 ## Features
 
@@ -50,9 +51,9 @@ The main dashboard provides a quick snapshot of your financial status:
 ## How to Use
 
 ### Getting Started
-1. Access the dashboard URL
-2. Register for a new account or log in with existing credentials
-3. You'll be directed to the main dashboard showing your financial overview
+1. Open `/` and choose **Login** or **Register**
+2. After logging in you will arrive at `/dashboard`
+3. Use the navigation bar to visit the expenses, budgets, reports or profile pages
 
 ### Adding an Expense
 1. Click the "Expenses" tab in the navigation menu

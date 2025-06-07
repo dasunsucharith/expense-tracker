@@ -59,13 +59,41 @@ with app.app_context():
         print("Default categories created")
 
 @app.route('/')
-def index():
-    return send_from_directory(app.static_folder, 'index.html')
+def home():
+    return send_from_directory(app.static_folder, 'home.html')
+
+@app.route('/login')
+def login_page():
+    return send_from_directory(app.static_folder, 'login.html')
+
+@app.route('/register')
+def register_page():
+    return send_from_directory(app.static_folder, 'register.html')
 
 
 @app.route('/dashboard')
 def dashboard_page():
     return send_from_directory(app.static_folder, 'dashboard.html')
+
+
+@app.route('/expenses')
+def expenses_page():
+    return send_from_directory(app.static_folder, 'expenses.html')
+
+
+@app.route('/budgets')
+def budgets_page():
+    return send_from_directory(app.static_folder, 'budgets.html')
+
+
+@app.route('/reports')
+def reports_page():
+    return send_from_directory(app.static_folder, 'reports.html')
+
+
+@app.route('/profile')
+def profile_page():
+    return send_from_directory(app.static_folder, 'profile.html')
 
 
 @app.route('/<path:filename>')
