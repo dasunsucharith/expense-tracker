@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Expense Tracker</title>
+    <title>Expense Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
@@ -20,7 +20,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link active" href="/dashboard">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="/expenses">Expenses</a></li>
                 <li class="nav-item"><a class="nav-link" href="/budgets">Budgets</a></li>
                 <li class="nav-item"><a class="nav-link" href="/reports">Reports</a></li>
@@ -40,119 +40,95 @@
         </div>
     </div>
 </nav>
+<div class="container-fluid mt-4">
+                    <div id="expenses-page" class="page-container">
+                        <div class="row mb-4">
+                            <div class="col-md-8">
+                                <h2>Expenses</h2>
+                                <p class="text-muted">Manage your expenses</p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                                    <i class="fas fa-plus me-1"></i> Add Expense
+                                </button>
+                            </div>
+                        </div>
 
-<div class="container-fluid mt-4" id="dashboard-page">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h2>Dashboard</h2>
-            <p class="text-muted">Welcome to your expense tracker dashboard</p>
-        </div>
-    </div>
+                        <!-- Filters -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label for="expense-date-filter" class="form-label">Date Range</label>
+                                                <select class="form-select" id="expense-date-filter">
+                                                    <option value="this-month">This Month</option>
+                                                    <option value="last-month">Last Month</option>
+                                                    <option value="last-3-months">Last 3 Months</option>
+                                                    <option value="this-year">This Year</option>
+                                                    <option value="custom">Custom Range</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="expense-category-filter" class="form-label">Category</label>
+                                                <select class="form-select" id="expense-category-filter">
+                                                    <option value="">All Categories</option>
+                                                    <!-- Categories will be loaded here -->
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 d-none" id="custom-date-range">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <label for="expense-start-date" class="form-label">Start Date</label>
+                                                        <input type="date" class="form-control" id="expense-start-date">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="expense-end-date" class="form-label">End Date</label>
+                                                        <input type="date" class="form-control" id="expense-end-date">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2 d-flex align-items-end">
+                                                <button class="btn btn-primary w-100" id="apply-expense-filters">Apply Filters</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Total Expenses</h5>
-                    <h2 class="card-text" id="total-expenses"><span class="currency-symbol"></span>0.00</h2>
-                    <p class="card-text"><small id="expense-period">This month</small></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Budget Remaining</h5>
-                    <h2 class="card-text" id="budget-remaining"><span class="currency-symbol"></span>0.00</h2>
-                    <p class="card-text"><small id="budget-period">This month</small></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-info text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Expense Count</h5>
-                    <h2 class="card-text" id="expense-count">0</h2>
-                    <p class="card-text"><small>This month</small></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-warning text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Active Budgets</h5>
-                    <h2 class="card-text" id="active-budgets">0</h2>
-                    <p class="card-text"><small>Currently active</small></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light">
-                    <h5 class="card-title mb-0">Expenses by Category</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="expenses-by-category-chart" height="300"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light">
-                    <h5 class="card-title mb-0">Budget vs. Actual</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="budget-vs-actual-chart" height="300"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Recent Expenses</h5>
-                    <a href="/expenses" class="btn btn-sm btn-primary">View All</a>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Category</th>
-                                    <th>Description</th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recent-expenses-table">
-                                <!-- Expenses will be loaded here -->
-                            </tbody>
-                        </table>
+                        <!-- Expenses Table -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Category</th>
+                                                        <th>Description</th>
+                                                        <th>Amount</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="expenses-table">
+                                                    <!-- Expenses will be loaded here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div id="expenses-pagination" class="d-flex justify-content-center mt-3">
+                                            <!-- Pagination will be added here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Budget Status</h5>
-                    <a href="/budgets" class="btn btn-sm btn-primary">View All</a>
-                </div>
-                <div class="card-body">
-                    <div id="budget-status-container">
-                        <!-- Budget progress bars will be loaded here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
+                    <!-- Budgets Page -->
             <!-- Add Expense Modal -->
             <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
@@ -388,4 +364,10 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="app.js"></script>
     </body>
+</html>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="app.js"></script>
+</body>
 </html>

@@ -9,30 +9,37 @@ let charts = {};
 
 // Initialize the application
 document.addEventListener("DOMContentLoaded", function () {
-        // Set API URL based on current location
         API_URL = window.location.origin;
-
-        // Set up event listeners
         setupEventListeners();
-
-        // Initialize currency symbols with default or user currency
         updateCurrencySymbols();
-
-        const dashboardSection = document.getElementById("dashboard-section");
-        const authSection = document.getElementById("auth-section");
-
-        if (dashboardSection) {
-                if (token) {
-                        fetchUserProfile();
-                        const expenseDate = document.getElementById("expense-date");
-                        if (expenseDate) expenseDate.valueAsDate = new Date();
-                } else {
-                        showAuthSection();
-                }
-        } else if (authSection) {
-                if (token) {
-                        showDashboard();
-                }
+        token = localStorage.getItem("token");
+        if (token) { fetchUserProfile(); }
+        const dashboardPage = document.getElementById("dashboard-page");
+        const expensesPage = document.getElementById("expenses-page");
+        const budgetsPage = document.getElementById("budgets-page");
+        const reportsPage = document.getElementById("reports-page");
+        const profilePage = document.getElementById("profile-page");
+        if (dashboardPage) {
+            if (!token) { window.location.href = "/login"; return; }
+            const expenseDate = document.getElementById("expense-date");
+            if (expenseDate) expenseDate.valueAsDate = new Date();
+            loadDashboardData();
+        } else if (expensesPage) {
+            if (!token) { window.location.href = "/login"; return; }
+            loadCategories().then(() => loadExpenses());
+        } else if (budgetsPage) {
+            if (!token) { window.location.href = "/login"; return; }
+            loadCategories().then(() => loadBudgets());
+        } else if (reportsPage) {
+            if (!token) { window.location.href = "/login"; return; }
+            loadCategories();
+        } else if (profilePage) {
+            if (!token) { window.location.href = "/login"; return; }
+            showUserProfile();
+        } else {
+            if (token && document.getElementById("auth-section")) {
+                window.location.href = "/dashboard";
+            }
         }
 });
 
@@ -45,15 +52,6 @@ function setupEventListeners() {
         const registerForm = document.getElementById("register-form");
         if (registerForm) registerForm.addEventListener("submit", handleRegister);
 
-	// Navigation
-        document.querySelectorAll(".nav-link[data-page]").forEach((link) => {
-                link.addEventListener("click", function (e) {
-                        e.preventDefault();
-                        navigateTo(this.getAttribute("data-page"));
-                });
-        });
-
-	// Logout
         const logoutLink = document.getElementById("logout-link");
         if (logoutLink) logoutLink.addEventListener("click", handleLogout);
 
@@ -127,10 +125,9 @@ function handleLogin(e) {
                                 updateCurrencySymbols();
 
 				// Show dashboard
-                                showDashboard();
-			} else {
-				// Show error
-				const errorElement = document.getElementById("login-error");
+                                // Show dashboard
+                                window.location.href = "/dashboard";
+
 				errorElement.textContent =
 					data.message || "Login failed. Please check your credentials.";
 				errorElement.classList.remove("d-none");
@@ -201,8 +198,7 @@ function handleLogout(e) {
 	localStorage.removeItem("token");
 	currentUser = null;
 
-	// Show auth section
-	showAuthSection();
+        window.location.href = "/login";
 }
 
 function fetchUserProfile() {
@@ -220,92 +216,20 @@ function fetchUserProfile() {
                 .then((data) => {
                         currentUser = data;
                         updateCurrencySymbols();
-                        showDashboard();
+                        const usernameDisplay = document.getElementById("username-display");
+                        if (usernameDisplay) {
+                                usernameDisplay.textContent = currentUser.username;
+                        }
                 })
 		.catch((error) => {
 			console.error("Profile fetch error:", error);
-			// Token invalid, show auth section
-			token = null;
-			localStorage.removeItem("token");
-			showAuthSection();
-		});
+                        token = null;
+                        localStorage.removeItem("token");
+                        window.location.href = "/login";
+                });
 }
 
 // UI functions
-function showAuthSection() {
-        const authSection = document.getElementById("auth-section");
-        const dashboardSection = document.getElementById("dashboard-section");
-
-        if (authSection) {
-                authSection.classList.remove("d-none");
-                if (dashboardSection) dashboardSection.classList.add("d-none");
-        } else {
-                window.location.href = "/";
-        }
-}
-
-function showDashboard() {
-        const authSection = document.getElementById("auth-section");
-        const dashboardSection = document.getElementById("dashboard-section");
-
-        if (dashboardSection) {
-                if (authSection) authSection.classList.add("d-none");
-                dashboardSection.classList.remove("d-none");
-
-                // Set username in navbar
-                const usernameDisplay = document.getElementById("username-display");
-                if (usernameDisplay && currentUser) {
-                        usernameDisplay.textContent = currentUser.username;
-                }
-
-                // Show dashboard page by default
-                navigateTo("dashboard");
-        } else {
-                window.location.href = "/dashboard";
-        }
-}
-
-function navigateTo(page) {
-	// Hide all pages
-	document.querySelectorAll(".dashboard-page").forEach((element) => {
-		element.classList.add("d-none");
-	});
-
-	// Show selected page
-	document.getElementById(`${page}-page`).classList.remove("d-none");
-
-	// Update active nav link
-	document.querySelectorAll(".nav-link").forEach((link) => {
-		link.classList.remove("active");
-	});
-	document
-		.querySelector(`.nav-link[data-page="${page}"]`)
-		.classList.add("active");
-
-	// Load page-specific data
-	if (page === "dashboard") {
-		loadDashboardData();
-	} else if (page === "expenses") {
-		loadCategories().then(() => loadExpenses());
-	} else if (page === "budgets") {
-		loadCategories().then(() => loadBudgets());
-	} else if (page === "reports") {
-		// Reports page is loaded on demand
-	}
-}
-
-// Data loading functions
-function loadDashboardData() {
-	// Load all required data for dashboard
-	Promise.all([
-		loadCategories(),
-		loadDashboardSummary(),
-		loadRecentExpenses(),
-		loadBudgetStatus(),
-	]).then(() => {
-		// Initialize charts after data is loaded
-		initializeCharts();
-	});
 }
 
 function loadCategories() {
@@ -2108,13 +2032,8 @@ function saveUserProfile() {
                                 currentUser = data.user;
                                 updateCurrencySymbols();
 
-                                // Refresh data on current page
-                                const active = document.querySelector('.nav-link.active[data-page]');
-                                if (active) {
-                                        navigateTo(active.getAttribute('data-page'));
-                                } else {
-                                        loadDashboardData();
-                                }
+                                // Refresh current page
+                                window.location.reload();
 
                                 const modal = bootstrap.Modal.getInstance(
                                         document.getElementById("profileModal")
