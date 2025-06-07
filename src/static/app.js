@@ -103,43 +103,40 @@ function setupEventListeners() {
 
 // Authentication functions
 function handleLogin(e) {
-	e.preventDefault();
+        e.preventDefault();
 
-	const username = document.getElementById("login-username").value;
-	const password = document.getElementById("login-password").value;
+        const username = document.getElementById("login-username").value;
+        const password = document.getElementById("login-password").value;
+        const errorElement = document.getElementById("login-error");
 
-	fetch(`${API_URL}/api/user/login`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ username, password }),
-	})
-		.then((response) => response.json())
-		.then((data) => {
-			if (data.token) {
-				// Save token and user data
-				token = data.token;
-				localStorage.setItem("token", token);
+        fetch(`${API_URL}/api/user/login`, {
+                method: "POST",
+                headers: {
+                        "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username, password }),
+        })
+                .then((response) => response.json())
+                .then((data) => {
+                        if (data.token) {
+                                // Save token and user data
+                                token = data.token;
+                                localStorage.setItem("token", token);
                                 currentUser = data.user;
                                 updateCurrencySymbols();
-
-				// Show dashboard
-                                // Show dashboard
                                 window.location.href = "/dashboard";
-
-				errorElement.textContent =
-					data.message || "Login failed. Please check your credentials.";
-				errorElement.classList.remove("d-none");
-			}
-		})
-		.catch((error) => {
-			console.error("Login error:", error);
-			const errorElement = document.getElementById("login-error");
-			errorElement.textContent =
-				"An error occurred during login. Please try again.";
-			errorElement.classList.remove("d-none");
-		});
+                        } else {
+                                errorElement.textContent =
+                                        data.message || "Login failed. Please check your credentials.";
+                                errorElement.classList.remove("d-none");
+                        }
+                })
+                .catch((error) => {
+                        console.error("Login error:", error);
+                        errorElement.textContent =
+                                "An error occurred during login. Please try again.";
+                        errorElement.classList.remove("d-none");
+                });
 }
 
 function handleRegister(e) {
