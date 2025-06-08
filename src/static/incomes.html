@@ -7,6 +7,604 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <link rel="stylesheet" href="/styles.css">
+        <style>
+            /* Advanced incomes-specific styles */
+            :root {
+                --income-primary: #28a745;
+                --income-secondary: #20c997;
+                --income-success: #10d876;
+                --income-info: #17a2b8;
+                --income-warning: #ffc107;
+                --income-light: #f8f9fa;
+            }
+
+            .page-hero {
+                background: linear-gradient(135deg, var(--income-primary) 0%, var(--income-secondary) 100%);
+                color: white;
+                border-radius: 25px;
+                padding: 40px;
+                margin-bottom: 30px;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 15px 35px rgba(40, 167, 69, 0.3);
+            }
+
+            .page-hero::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+                animation: float 6s ease-in-out infinite;
+            }
+
+            @keyframes float {
+
+                0%,
+                100% {
+                    transform: translateY(0px) rotate(0deg);
+                }
+
+                50% {
+                    transform: translateY(-20px) rotate(180deg);
+                }
+            }
+
+            .page-hero h2 {
+                font-weight: 800;
+                font-size: 2.5rem;
+                margin-bottom: 15px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .hero-stats {
+                display: flex;
+                gap: 30px;
+                margin-top: 20px;
+                flex-wrap: wrap;
+            }
+
+            .hero-stat {
+                text-align: center;
+                padding: 15px;
+                background: rgba(255, 255, 255, 0.15);
+                border-radius: 15px;
+                backdrop-filter: blur(10px);
+                flex: 1;
+                min-width: 120px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .hero-stat-value {
+                font-size: 1.8rem;
+                font-weight: 700;
+                margin-bottom: 5px;
+                display: block;
+            }
+
+            .hero-stat-label {
+                font-size: 0.9rem;
+                opacity: 0.9;
+                font-weight: 500;
+            }
+
+            .filters-panel {
+                background: linear-gradient(145deg, #ffffff, #f8f9fa);
+                border: none;
+                border-radius: 20px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                padding: 30px;
+                margin-bottom: 30px;
+                position: relative;
+            }
+
+            .filters-panel::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, var(--income-primary), var(--income-secondary));
+                border-radius: 20px 20px 0 0;
+            }
+
+            .filter-group {
+                position: relative;
+                margin-bottom: 20px;
+            }
+
+            .filter-label {
+                font-weight: 700;
+                color: #2c3e50;
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .filter-input {
+                border: 2px solid #e9ecef;
+                border-radius: 12px;
+                padding: 12px 15px;
+                transition: all 0.3s ease;
+                background: #fff;
+            }
+
+            .filter-input:focus {
+                border-color: var(--income-primary);
+                box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.15);
+                transform: translateY(-2px);
+            }
+
+            .incomes-table-container {
+                background: #fff;
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+                margin-bottom: 30px;
+            }
+
+            .table-header {
+                background: linear-gradient(135deg, var(--income-primary), var(--income-secondary));
+                color: white;
+                padding: 25px 30px;
+                border-radius: 20px 20px 0 0;
+            }
+
+            .table-title {
+                font-size: 1.4rem;
+                font-weight: 700;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .table-actions {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .export-btn {
+                background: rgba(255, 255, 255, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                color: white;
+                border-radius: 25px;
+                padding: 8px 16px;
+                font-size: 0.9rem;
+                transition: all 0.3s ease;
+            }
+
+            .export-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: translateY(-2px);
+                color: white;
+            }
+
+            .advanced-table {
+                margin: 0;
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+
+            .advanced-table thead th {
+                background: linear-gradient(135deg, #34495e, #2c3e50);
+                color: white;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-size: 0.85rem;
+                padding: 18px 20px;
+                border: none;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+
+            .advanced-table tbody tr {
+                transition: all 0.4s ease;
+                border-bottom: 1px solid #f1f3f4;
+                background: #fff;
+            }
+
+            .advanced-table tbody tr:hover {
+                background: linear-gradient(135deg, rgba(40, 167, 69, 0.03), rgba(32, 201, 151, 0.03));
+                transform: translateY(-3px) scale(1.002);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+                border-radius: 10px;
+            }
+
+            .advanced-table td {
+                padding: 20px;
+                vertical-align: middle;
+                border: none;
+            }
+
+            .income-row-date {
+                background: linear-gradient(135deg, #e8f5e8, #d4edda);
+                padding: 8px 12px;
+                border-radius: 10px;
+                font-weight: 600;
+                color: #155724;
+                border-left: 4px solid var(--income-primary);
+                font-size: 0.9rem;
+            }
+
+            .income-type-pill {
+                display: inline-flex;
+                align-items: center;
+                padding: 8px 15px;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: white;
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .income-type-pill::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.5s;
+            }
+
+            .income-type-pill:hover::before {
+                left: 100%;
+            }
+
+            .type-salary {
+                background: linear-gradient(135deg, #007bff, #0056b3);
+            }
+
+            .type-business {
+                background: linear-gradient(135deg, #28a745, #1e7e34);
+            }
+
+            .type-investments {
+                background: linear-gradient(135deg, #6f42c1, #5a32a3);
+            }
+
+            .type-other {
+                background: linear-gradient(135deg, #6c757d, #545b62);
+            }
+
+            .type-icon {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                margin-right: 8px;
+                background-color: rgba(255, 255, 255, 0.8);
+            }
+
+            .amount-display {
+                font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: var(--income-primary);
+                text-align: right;
+                position: relative;
+            }
+
+            .amount-display::before {
+                content: '+';
+                margin-right: 2px;
+                color: var(--income-primary);
+            }
+
+            .description-cell {
+                max-width: 200px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                color: #6c757d;
+                font-style: italic;
+            }
+
+            .description-cell:hover {
+                white-space: normal;
+                word-wrap: break-word;
+            }
+
+            .action-buttons {
+                display: flex;
+                gap: 8px;
+                justify-content: center;
+            }
+
+            .action-btn {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                border: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .action-btn::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transition: all 0.3s ease;
+                transform: translate(-50%, -50%);
+            }
+
+            .action-btn:hover::before {
+                width: 100%;
+                height: 100%;
+            }
+
+            .action-btn:hover {
+                transform: scale(1.15) rotate(360deg);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            }
+
+            .btn-edit {
+                background: linear-gradient(135deg, #ffc107, #ff8f00);
+                color: white;
+            }
+
+            .btn-delete {
+                background: linear-gradient(135deg, #dc3545, #bd2130);
+                color: white;
+            }
+
+            .empty-state {
+                text-align: center;
+                padding: 80px 40px;
+                background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+                border-radius: 20px;
+                margin: 20px;
+            }
+
+            .empty-state-icon {
+                font-size: 5rem;
+                margin-bottom: 25px;
+                background: linear-gradient(135deg, var(--income-primary), var(--income-secondary));
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .empty-state h4 {
+                color: #2c3e50;
+                font-weight: 700;
+                margin-bottom: 15px;
+            }
+
+            .empty-state p {
+                color: #6c757d;
+                font-size: 1.1rem;
+                line-height: 1.6;
+                margin-bottom: 30px;
+            }
+
+            .quick-add-btn {
+                background: linear-gradient(135deg, var(--income-primary), var(--income-secondary));
+                border: none;
+                border-radius: 25px;
+                padding: 15px 30px;
+                color: white;
+                font-weight: 700;
+                font-size: 1.1rem;
+                transition: all 0.3s ease;
+                box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+            }
+
+            .quick-add-btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 12px 30px rgba(40, 167, 69, 0.4);
+                color: white;
+            }
+
+            .floating-add-btn {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, var(--income-primary), var(--income-secondary));
+                border: none;
+                box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+                z-index: 1000;
+                transition: all 0.3s ease;
+                color: white;
+                font-size: 1.5rem;
+            }
+
+            .floating-add-btn:hover {
+                transform: scale(1.1) rotate(90deg);
+                box-shadow: 0 12px 35px rgba(40, 167, 69, 0.5);
+                color: white;
+            }
+
+            .search-box {
+                position: relative;
+                margin-bottom: 20px;
+            }
+
+            .search-input {
+                padding: 15px 50px 15px 20px;
+                border: 2px solid #e9ecef;
+                border-radius: 25px;
+                width: 100%;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+            }
+
+            .search-input:focus {
+                border-color: var(--income-primary);
+                box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.15);
+            }
+
+            .search-icon {
+                position: absolute;
+                right: 20px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #6c757d;
+            }
+
+            .btn-gradient {
+                background: linear-gradient(135deg, var(--income-primary), var(--income-secondary));
+                border: none;
+                border-radius: 12px;
+                padding: 12px 25px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                color: white;
+            }
+
+            .btn-gradient:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+                color: white;
+            }
+
+            /* Enhanced Modal Styles */
+            .modal-content {
+                border: none;
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            }
+
+            .modal-header {
+                border-radius: 20px 20px 0 0;
+                padding: 25px 30px;
+                border-bottom: none;
+            }
+
+            .modal-body {
+                padding: 30px;
+            }
+
+            .modal-footer {
+                border-top: 1px solid #e9ecef;
+                padding: 20px 30px;
+                border-radius: 0 0 20px 20px;
+            }
+
+            .form-floating {
+                margin-bottom: 20px;
+            }
+
+            .form-floating>.form-control {
+                border-radius: 12px;
+                border: 2px solid #e9ecef;
+                padding: 12px 15px;
+                height: calc(3.5rem + 2px);
+            }
+
+            .form-floating>.form-control:focus {
+                border-color: var(--income-primary);
+                box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.15);
+            }
+
+            .form-floating>label {
+                color: #6c757d;
+                font-weight: 600;
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .page-hero {
+                    padding: 25px;
+                    text-align: center;
+                }
+
+                .page-hero h2 {
+                    font-size: 2rem;
+                }
+
+                .hero-stats {
+                    justify-content: center;
+                    gap: 15px;
+                }
+
+                .hero-stat {
+                    min-width: 100px;
+                    padding: 10px;
+                }
+
+                .filters-panel {
+                    padding: 20px;
+                }
+
+                .table-actions {
+                    justify-content: center;
+                    margin-top: 15px;
+                }
+
+                .floating-add-btn {
+                    bottom: 20px;
+                    right: 20px;
+                    width: 50px;
+                    height: 50px;
+                    font-size: 1.2rem;
+                }
+
+                .advanced-table td {
+                    padding: 12px 8px;
+                    font-size: 0.9rem;
+                }
+
+                .description-cell {
+                    max-width: 120px;
+                }
+            }
+
+            /* Advanced Animations */
+            .slide-in-up {
+                animation: slideInUp 0.6s ease-out;
+            }
+
+            @keyframes slideInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .pulse-on-load {
+                animation: pulseOnLoad 1.5s ease-in-out;
+            }
+
+            @keyframes pulseOnLoad {
+
+                0%,
+                100% {
+                    transform: scale(1);
+                }
+
+                50% {
+                    transform: scale(1.02);
+                }
+            }
+        </style>
     </head>
     <body>
         <!-- Navigation -->
@@ -371,5 +969,415 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
         <script src="/app.js"></script>
 
+        <script>
+            // Additional incomes-specific functionality
+            document.addEventListener('DOMContentLoaded', function () {
+                // Set default date for income form
+                const incomeDate = document.getElementById('income-date');
+                if (incomeDate) {
+                    incomeDate.valueAsDate = new Date();
+                }
+
+                // Update quick stats when incomes are loaded
+                function updateQuickStats(incomes) {
+                    if (!incomes || incomes.length === 0) {
+                        document.getElementById('hero-total').innerHTML = '<span class="currency-symbol">$</span>0.00';
+                        document.getElementById('hero-count').textContent = '0';
+                        document.getElementById('hero-average').innerHTML = '<span class="currency-symbol">$</span>0.00';
+                        document.getElementById('hero-last-date').textContent = '-';
+                        document.getElementById('empty-state').classList.remove('d-none');
+                        document.getElementById('record-count').textContent = '0 records';
+                        return;
+                    }
+
+                    document.getElementById('empty-state').classList.add('d-none');
+
+                    const total = incomes.reduce((sum, inc) => sum + inc.amount, 0);
+                    const average = total / incomes.length;
+                    const lastIncome = incomes[0]; // Assuming incomes are sorted by date desc
+
+                    // Animate the values
+                    animateValue(document.getElementById('hero-total'), 0, total, 1000, true);
+                    animateValue(document.getElementById('hero-count'), 0, incomes.length, 800, false);
+                    animateValue(document.getElementById('hero-average'), 0, average, 1200, true);
+
+                    document.getElementById('record-count').textContent = `${incomes.length} record${incomes.length !== 1 ? 's' : ''}`;
+
+                    if (lastIncome) {
+                        const lastDate = new Date(lastIncome.date);
+                        document.getElementById('hero-last-date').textContent = formatDateShort(lastDate);
+                    }
+                }
+
+                // Enhanced table row creation
+                function createIncomeRow(income) {
+                    const row = document.createElement('tr');
+                    row.className = 'slide-in-up';
+
+                    const typeClass = getIncomeTypeClass(income.income_type);
+                    const displayType = income.income_type === 'Other' && income.other_source
+                        ? `${income.income_type} - ${income.other_source}`
+                        : income.income_type;
+
+                    row.innerHTML = `
+                    <td>
+                        <div class="income-row-date">
+                            ${formatDate(new Date(income.date))}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="income-type-pill ${typeClass}">
+                            <span class="type-icon"></span>
+                            ${displayType}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="description-cell">
+                            ${income.description || '<em class="text-muted">No description</em>'}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="amount-display">
+                            ${formatCurrency(income.amount)}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn action-btn btn-edit edit-income-btn" data-id="${income.id}" title="Edit Income">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+
+                    return row;
+                }
+
+                function getIncomeTypeClass(type) {
+                    switch (type) {
+                        case 'Salary': return 'type-salary';
+                        case 'Business': return 'type-business';
+                        case 'Investments': return 'type-investments';
+                        default: return 'type-other';
+                    }
+                }
+
+                // Override the original loadIncomes function to use enhanced features
+                const originalLoadIncomes = window.loadIncomes;
+                window.loadIncomes = function () {
+                    if (originalLoadIncomes) {
+                        return originalLoadIncomes().then(incomes => {
+                            updateQuickStats(incomes);
+
+                            // Enhanced table population
+                            const tableBody = document.getElementById('incomes-table');
+                            if (tableBody && incomes && incomes.length > 0) {
+                                tableBody.innerHTML = '';
+                                incomes.forEach(income => {
+                                    const row = createIncomeRow(income);
+                                    tableBody.appendChild(row);
+                                });
+
+                                // Re-attach event listeners
+                                document.querySelectorAll('.edit-income-btn').forEach(button => {
+                                    button.addEventListener('click', function () {
+                                        const incomeId = this.getAttribute('data-id');
+                                        openEditIncomeModal(incomeId);
+                                    });
+                                });
+                            }
+
+                            return incomes;
+                        });
+                    }
+                };
+
+                // Export functionality
+                window.exportIncomes = function (format) {
+                    const incomes = window.incomes || [];
+                    if (incomes.length === 0) {
+                        showToast('No incomes to export', 'warning');
+                        return;
+                    }
+
+                    if (format === 'csv') {
+                        exportToCSV(incomes);
+                    } else if (format === 'excel') {
+                        exportToExcel(incomes);
+                    } else if (format === 'pdf') {
+                        exportToPDF(incomes);
+                    }
+                };
+
+                window.printIncomes = function () {
+                    const incomes = window.incomes || [];
+                    if (incomes.length === 0) {
+                        showToast('No incomes to print', 'warning');
+                        return;
+                    }
+
+                    const printWindow = window.open('', '_blank');
+                    const printContent = generatePrintContent(incomes);
+                    printWindow.document.write(printContent);
+                    printWindow.document.close();
+                    printWindow.print();
+                };
+
+                function exportToCSV(incomes) {
+                    const headers = ['Date', 'Type', 'Other Source', 'Description', 'Amount'];
+                    const csvContent = [
+                        headers.join(','),
+                        ...incomes.map(inc => [
+                            inc.date,
+                            inc.income_type,
+                            `"${inc.other_source || ''}"`,
+                            `"${inc.description || ''}"`,
+                            inc.amount
+                        ].join(','))
+                    ].join('\n');
+
+                    downloadFile(csvContent, 'incomes.csv', 'text/csv');
+                }
+
+                function exportToExcel(incomes) {
+                    showToast('Excel export feature coming soon! Exporting as CSV instead.', 'info');
+                    exportToCSV(incomes);
+                }
+
+                function exportToPDF(incomes) {
+                    showToast('PDF export feature coming soon! Exporting as CSV instead.', 'info');
+                    exportToCSV(incomes);
+                }
+
+                function generatePrintContent(incomes) {
+                    const total = incomes.reduce((sum, inc) => sum + inc.amount, 0);
+                    return `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Income Report</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            h1 { color: #28a745; text-align: center; }
+                            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                            th { background-color: #28a745; color: white; }
+                            .total { font-weight: bold; background-color: #f8f9fa; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Income Report</h1>
+                        <p>Generated on: ${new Date().toLocaleDateString()}</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${incomes.map(inc => `
+                                    <tr>
+                                        <td>${formatDate(new Date(inc.date))}</td>
+                                        <td>${inc.income_type === 'Other' && inc.other_source ? `${inc.income_type} - ${inc.other_source}` : inc.income_type}</td>
+                                        <td>${inc.description || '-'}</td>
+                                        <td>${formatCurrency(inc.amount)}</td>
+                                    </tr>
+                                `).join('')}
+                                <tr class="total">
+                                    <td colspan="3"><strong>Total Income</strong></td>
+                                    <td><strong>${formatCurrency(total)}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </body>
+                    </html>
+                `;
+                }
+
+                function downloadFile(content, fileName, contentType) {
+                    const blob = new Blob([content], { type: contentType });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    showToast(`Exported ${fileName} successfully!`, 'success');
+                }
+
+                // Search functionality
+                const searchInput = document.getElementById('income-search');
+                if (searchInput) {
+                    searchInput.addEventListener('input', function () {
+                        const searchTerm = this.value.toLowerCase();
+                        const rows = document.querySelectorAll('#incomes-table tr');
+
+                        rows.forEach(row => {
+                            const text = row.textContent.toLowerCase();
+                            if (text.includes(searchTerm)) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+                    });
+                }
+
+                // Sorting functionality
+                window.sortTable = function (column) {
+                    const table = document.getElementById('incomes-table');
+                    const rows = Array.from(table.rows);
+                    const sortIcon = document.getElementById(`sort-${column}`);
+
+                    // Toggle sort direction
+                    const isAsc = sortIcon.classList.contains('fa-sort-up');
+
+                    // Reset all sort icons
+                    document.querySelectorAll('.sort-icon').forEach(icon => {
+                        icon.className = 'fas fa-sort sort-icon';
+                    });
+
+                    // Set current sort icon
+                    sortIcon.className = `fas fa-sort-${isAsc ? 'down' : 'up'} sort-icon`;
+
+                    // Sort rows
+                    rows.sort((a, b) => {
+                        let aVal, bVal;
+
+                        switch (column) {
+                            case 'date':
+                                aVal = new Date(a.cells[0].textContent.trim());
+                                bVal = new Date(b.cells[0].textContent.trim());
+                                break;
+                            case 'type':
+                                aVal = a.cells[1].textContent.trim();
+                                bVal = b.cells[1].textContent.trim();
+                                break;
+                            case 'amount':
+                                aVal = parseFloat(a.cells[3].textContent.replace(/[^0-9.-]+/g, ''));
+                                bVal = parseFloat(b.cells[3].textContent.replace(/[^0-9.-]+/g, ''));
+                                break;
+                            default:
+                                return 0;
+                        }
+
+                        if (aVal < bVal) return isAsc ? 1 : -1;
+                        if (aVal > bVal) return isAsc ? -1 : 1;
+                        return 0;
+                    });
+
+                    // Re-append sorted rows
+                    rows.forEach(row => table.appendChild(row));
+                };
+
+                // Utility functions
+                function animateValue(element, start, end, duration, isCurrency = false) {
+                    let startTimestamp = null;
+                    const step = (timestamp) => {
+                        if (!startTimestamp) startTimestamp = timestamp;
+                        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                        const current = progress * (end - start) + start;
+
+                        if (isCurrency) {
+                            const symbol = element.querySelector('.currency-symbol');
+                            if (symbol) {
+                                element.innerHTML = symbol.outerHTML + current.toFixed(2);
+                            } else {
+                                element.textContent = formatCurrency(current);
+                            }
+                        } else {
+                            element.textContent = Math.floor(current);
+                        }
+
+                        if (progress < 1) {
+                            window.requestAnimationFrame(step);
+                        }
+                    };
+                    window.requestAnimationFrame(step);
+                }
+
+                function formatDateShort(date) {
+                    return date.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                }
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', function (e) {
+                    // Ctrl/Cmd + N = Add Income
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                        e.preventDefault();
+                        const addIncomeModal = new bootstrap.Modal(document.getElementById('addIncomeModal'));
+                        addIncomeModal.show();
+                    }
+
+                    // Ctrl/Cmd + F = Focus on search
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                        e.preventDefault();
+                        document.getElementById('income-search').focus();
+                    }
+                });
+
+                // Auto-save draft functionality for forms
+                const formFields = ['income-amount', 'income-description'];
+                formFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.addEventListener('input', function () {
+                            localStorage.setItem(`draft_${fieldId}`, this.value);
+                        });
+
+                        // Restore draft on page load
+                        const draftValue = localStorage.getItem(`draft_${fieldId}`);
+                        if (draftValue) {
+                            field.value = draftValue;
+                        }
+                    }
+                });
+
+                // Clear drafts when form is submitted successfully
+                document.getElementById('save-income')?.addEventListener('click', function () {
+                    formFields.forEach(fieldId => {
+                        localStorage.removeItem(`draft_${fieldId}`);
+                    });
+                });
+
+                // Add tooltips
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+
+                // Intersection Observer for animations
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                // Apply animation observer to cards
+                document.querySelectorAll('.slide-in-up').forEach(element => {
+                    element.style.opacity = '0';
+                    element.style.transform = 'translateY(20px)';
+                    element.style.transition = 'all 0.6s ease-out';
+                    observer.observe(element);
+                });
+            });
+
+            // Enhanced error handling
+            window.addEventListener('error', function (e) {
+                console.error('Incomes page error:', e.error);
+                showToast('An unexpected error occurred. Please refresh the page.', 'error');
+            });
+        </script>
     </body>
 </html>

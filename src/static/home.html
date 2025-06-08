@@ -7,6 +7,158 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <link rel="stylesheet" href="/styles.css">
+        <style>
+            /* Additional styles for enhanced home page */
+            .hero-section {
+                background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);
+                color: white;
+                padding: 80px 0;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .hero-section::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,0 1000,100 1000,0"/></svg>');
+                background-size: cover;
+            }
+
+            .hero-content {
+                position: relative;
+                z-index: 2;
+            }
+
+            .feature-icon {
+                font-size: 3rem;
+                color: #4361ee;
+                margin-bottom: 1rem;
+            }
+
+            .feature-card {
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                border: none;
+                height: 100%;
+            }
+
+            .feature-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            }
+
+            .stats-section {
+                background-color: #f8f9fa;
+                padding: 60px 0;
+            }
+
+            .stat-number {
+                font-size: 3rem;
+                font-weight: bold;
+                color: #4361ee;
+            }
+
+            .cta-section {
+                background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+                color: white;
+                padding: 80px 0;
+            }
+
+            .btn-hero {
+                background-color: white;
+                color: #4361ee;
+                border: 2px solid white;
+                padding: 12px 30px;
+                font-weight: 600;
+                border-radius: 50px;
+                transition: all 0.3s ease;
+            }
+
+            .btn-hero:hover {
+                background-color: transparent;
+                color: white;
+                border-color: white;
+            }
+
+            .btn-outline-hero {
+                background-color: transparent;
+                color: white;
+                border: 2px solid white;
+                padding: 12px 30px;
+                font-weight: 600;
+                border-radius: 50px;
+                transition: all 0.3s ease;
+            }
+
+            .btn-outline-hero:hover {
+                background-color: white;
+                color: #4361ee;
+            }
+
+            .testimonial-card {
+                background: white;
+                border-radius: 15px;
+                padding: 30px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+                margin: 15px;
+                position: relative;
+            }
+
+            .testimonial-card::before {
+                content: '"';
+                font-size: 4rem;
+                color: #4361ee;
+                position: absolute;
+                top: -10px;
+                left: 20px;
+                opacity: 0.3;
+            }
+
+            .navbar-transparent {
+                background-color: rgba(67, 97, 238, 0.95) !important;
+                backdrop-filter: blur(10px);
+                transition: all 0.3s ease;
+            }
+
+            .floating-element {
+                animation: float 3s ease-in-out infinite;
+            }
+
+            @keyframes float {
+                0% {
+                    transform: translateY(0px);
+                }
+
+                50% {
+                    transform: translateY(-10px);
+                }
+
+                100% {
+                    transform: translateY(0px);
+                }
+            }
+
+            .section-divider {
+                height: 100px;
+                background: linear-gradient(to right, transparent, rgba(67, 97, 238, 0.1), transparent);
+                position: relative;
+            }
+
+            .section-divider::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 50px;
+                height: 3px;
+                background: #4361ee;
+                border-radius: 2px;
+            }
+        </style>
     </head>
     <body>
         <!-- Navigation -->
@@ -302,5 +454,80 @@
         </footer>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Smooth scrolling for navigation links
+            document.addEventListener('DOMContentLoaded', function () {
+                const links = document.querySelectorAll('a[href^="#"]');
+
+                links.forEach(link => {
+                    link.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const targetId = this.getAttribute('href');
+                        const targetElement = document.querySelector(targetId);
+
+                        if (targetElement) {
+                            targetElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    });
+                });
+
+                // Navbar background on scroll
+                window.addEventListener('scroll', function () {
+                    const navbar = document.querySelector('.navbar');
+                    if (window.scrollY > 50) {
+                        navbar.style.backgroundColor = 'rgba(67, 97, 238, 0.98)';
+                    } else {
+                        navbar.style.backgroundColor = 'rgba(67, 97, 238, 0.95)';
+                    }
+                });
+
+                // Counter animation
+                const counters = document.querySelectorAll('.stat-number');
+                const speed = 200;
+
+                const animateCounters = () => {
+                    counters.forEach(counter => {
+                        const updateCount = () => {
+                            const target = parseInt(counter.textContent.replace(/[^\d]/g, ''));
+                            const count = parseInt(counter.getAttribute('data-count') || '0');
+                            const inc = target / speed;
+
+                            if (count < target) {
+                                counter.setAttribute('data-count', Math.ceil(count + inc));
+                                if (counter.textContent.includes('K')) {
+                                    counter.textContent = Math.ceil(count + inc) / 1000 + 'K+';
+                                } else if (counter.textContent.includes('%')) {
+                                    counter.textContent = Math.ceil(count + inc) + '%';
+                                } else {
+                                    counter.textContent = Math.ceil(count + inc) + '+';
+                                }
+                                setTimeout(updateCount, 1);
+                            } else {
+                                counter.textContent = counter.textContent;
+                            }
+                        };
+                        updateCount();
+                    });
+                };
+
+                // Trigger counter animation when stats section comes into view
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            animateCounters();
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                });
+
+                const statsSection = document.querySelector('.stats-section');
+                if (statsSection) {
+                    observer.observe(statsSection);
+                }
+            });
+        </script>
     </body>
 </html>
