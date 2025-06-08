@@ -199,7 +199,12 @@ function handleRegister(e) {
 			if (data.message === "User registered successfully") {
 				// Show success and switch to login tab
 				showToast("Registration successful! Please log in.", "success");
-				document.getElementById("login-tab").click();
+                                const loginTab = document.getElementById("login-tab");
+                                if (loginTab) {
+                                        loginTab.click();
+                                } else {
+                                        window.location.href = "/login";
+                                }
 			} else {
 				// Show error
 				const errorElement = document.getElementById("register-error");
