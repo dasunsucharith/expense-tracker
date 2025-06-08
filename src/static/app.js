@@ -1039,16 +1039,18 @@ function saveExpense() {
 				document.getElementById("add-expense-form").reset();
 				document.getElementById("expense-date").valueAsDate = new Date();
 
-				// Reload data
-				if (
-					document
-						.querySelector('.nav-link[data-page="expenses"]')
-						.classList.contains("active")
-				) {
-					loadExpenses();
-				} else {
-					loadDashboardData();
-				}
+                                // Reload data
+                                const expensesLink = document.querySelector(
+                                        '.nav-link[data-page="expenses"]'
+                                );
+                                if (
+                                        expensesLink &&
+                                        expensesLink.classList.contains("active")
+                                ) {
+                                        loadExpenses();
+                                } else {
+                                        loadDashboardData();
+                                }
 			} else {
 				showToast(data.message || "Failed to add expense", "error");
 			}
@@ -1125,16 +1127,18 @@ function updateExpense() {
 				);
 				modal.hide();
 
-				// Reload data
-				if (
-					document
-						.querySelector('.nav-link[data-page="expenses"]')
-						.classList.contains("active")
-				) {
-					loadExpenses();
-				} else {
-					loadDashboardData();
-				}
+                                // Reload data
+                                const expensesLink = document.querySelector(
+                                        '.nav-link[data-page="expenses"]'
+                                );
+                                if (
+                                        expensesLink &&
+                                        expensesLink.classList.contains("active")
+                                ) {
+                                        loadExpenses();
+                                } else {
+                                        loadDashboardData();
+                                }
 			} else {
 				showToast(data.message || "Failed to update expense", "error");
 			}
@@ -1167,16 +1171,18 @@ function deleteExpense() {
 					);
 					modal.hide();
 
-					// Reload data
-					if (
-						document
-							.querySelector('.nav-link[data-page="expenses"]')
-							.classList.contains("active")
-					) {
-						loadExpenses();
-					} else {
-						loadDashboardData();
-					}
+                                        // Reload data
+                                        const expensesLink = document.querySelector(
+                                                '.nav-link[data-page="expenses"]'
+                                        );
+                                        if (
+                                                expensesLink &&
+                                                expensesLink.classList.contains("active")
+                                        ) {
+                                                loadExpenses();
+                                        } else {
+                                                loadDashboardData();
+                                        }
 				} else {
 					showToast(data.message || "Failed to delete expense", "error");
 				}
@@ -1253,16 +1259,18 @@ function saveBudget() {
 				// Reset form
 				document.getElementById("add-budget-form").reset();
 
-				// Reload data
-				if (
-					document
-						.querySelector('.nav-link[data-page="budgets"]')
-						.classList.contains("active")
-				) {
-					loadBudgets();
-				} else {
-					loadDashboardData();
-				}
+                                // Reload data
+                                const budgetsLink = document.querySelector(
+                                        '.nav-link[data-page="budgets"]'
+                                );
+                                if (
+                                        budgetsLink &&
+                                        budgetsLink.classList.contains("active")
+                                ) {
+                                        loadBudgets();
+                                } else {
+                                        loadDashboardData();
+                                }
 			} else {
 				showToast(data.message || "Failed to add budget", "error");
 			}
@@ -1336,16 +1344,18 @@ function updateBudget() {
 				);
 				modal.hide();
 
-				// Reload data
-				if (
-					document
-						.querySelector('.nav-link[data-page="budgets"]')
-						.classList.contains("active")
-				) {
-					loadBudgets();
-				} else {
-					loadDashboardData();
-				}
+                                // Reload data
+                                const budgetsLink = document.querySelector(
+                                        '.nav-link[data-page="budgets"]'
+                                );
+                                if (
+                                        budgetsLink &&
+                                        budgetsLink.classList.contains("active")
+                                ) {
+                                        loadBudgets();
+                                } else {
+                                        loadDashboardData();
+                                }
 			} else {
 				showToast(data.message || "Failed to update budget", "error");
 			}
@@ -1378,16 +1388,18 @@ function deleteBudget() {
 					);
 					modal.hide();
 
-					// Reload data
-					if (
-						document
-							.querySelector('.nav-link[data-page="budgets"]')
-							.classList.contains("active")
-					) {
-						loadBudgets();
-					} else {
-						loadDashboardData();
-					}
+                                        // Reload data
+                                        const budgetsLink = document.querySelector(
+                                                '.nav-link[data-page="budgets"]'
+                                        );
+                                        if (
+                                                budgetsLink &&
+                                                budgetsLink.classList.contains("active")
+                                        ) {
+                                                loadBudgets();
+                                        } else {
+                                                loadDashboardData();
+                                        }
 				} else {
 					showToast(data.message || "Failed to delete budget", "error");
 				}
