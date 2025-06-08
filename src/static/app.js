@@ -170,12 +170,7 @@ function setupEventListeners() {
         const budgetPeriod = document.getElementById("budget-period");
         if (budgetPeriod) budgetPeriod.addEventListener("change", toggleBudgetCustomDates);
 
-        // Profile
-        const profileLink = document.getElementById("profile-link");
-        if (profileLink) profileLink.addEventListener("click", showUserProfile);
-
-        const saveProfileBtn = document.getElementById("save-profile");
-        if (saveProfileBtn) saveProfileBtn.addEventListener("click", saveUserProfile);
+        // Profile page uses inline handler
 }
 
 // Authentication functions
@@ -2571,11 +2566,7 @@ function showUserProfile(e) {
                                 passwordEl.value = "";
                         }
 
-                        const modalEl = document.getElementById("profileModal");
-                        if (modalEl) {
-                                const modal = new bootstrap.Modal(modalEl);
-                                modal.show();
-                        }
+                        // modal removed; profile data is shown on profile page
                 })
                 .catch((error) => {
                         showToast("Failed to load profile", "error");
@@ -2605,13 +2596,7 @@ function saveUserProfile() {
                                 // Refresh current page
                                 window.location.reload();
 
-                                const modalEl = document.getElementById("profileModal");
-                                if (modalEl) {
-                                        const modal = bootstrap.Modal.getInstance(modalEl);
-                                        if (modal) {
-                                                modal.hide();
-                                        }
-                                }
+                                // modal removed
                                 showToast("Profile updated", "success");
                         } else {
                                 showToast(data.message || "Failed to update profile", "error");
