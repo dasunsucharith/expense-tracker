@@ -2048,11 +2048,12 @@ function showUserProfile(e) {
                                 data.created_at
                         ).toLocaleString();
                         document.getElementById("profile-currency").value = data.currency || "USD";
-                        // Show the Bootstrap modal
-                        const modal = new bootstrap.Modal(
-                                document.getElementById("profileModal")
-                        );
-                        modal.show();
+
+                        const modalEl = document.getElementById("profileModal");
+                        if (modalEl) {
+                                const modal = new bootstrap.Modal(modalEl);
+                                modal.show();
+                        }
                 })
                 .catch((error) => {
                         showToast("Failed to load profile", "error");
@@ -2079,10 +2080,13 @@ function saveUserProfile() {
                                 // Refresh current page
                                 window.location.reload();
 
-                                const modal = bootstrap.Modal.getInstance(
-                                        document.getElementById("profileModal")
-                                );
-                                modal.hide();
+                                const modalEl = document.getElementById("profileModal");
+                                if (modalEl) {
+                                        const modal = bootstrap.Modal.getInstance(modalEl);
+                                        if (modal) {
+                                                modal.hide();
+                                        }
+                                }
                                 showToast("Profile updated", "success");
                         } else {
                                 showToast(data.message || "Failed to update profile", "error");
