@@ -19,7 +19,7 @@ from flask_cors import CORS
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 CORS(app)  # Enable CORS for all routes
-app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # Register blueprints
 app.register_blueprint(user_bp, url_prefix='/api/user')
@@ -130,4 +130,6 @@ def server_error(e):
     return jsonify({"message": "Internal server error"}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    debug_env = os.getenv('DEBUG', 'False')
+    debug_mode = debug_env.lower() in ('1', 'true', 'yes', 'y', 't')
+    app.run(host='0.0.0.0', port=5000, debug=debug_mode)

@@ -123,6 +123,13 @@ After modifying a model, generate and apply a migration without dropping data:
    flask db upgrade
    ```
 
+### Environment Variables
+
+Set the following variables before running the application:
+
+- `SECRET_KEY` – secret key used for Flask sessions and JWT tokens.
+- `DEBUG` – set to `True` to enable debug mode (defaults to `False`).
+
 ## Support
 
 If you encounter any issues or have questions about using the dashboard, please contact support.
