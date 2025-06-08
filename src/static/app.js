@@ -362,13 +362,13 @@ function loadRecentExpenses() {
 			const tableBody = document.getElementById("recent-expenses-table");
 			tableBody.innerHTML = "";
 
-			if (data.length === 0) {
-				const row = document.createElement("tr");
-				row.innerHTML =
-					'<td colspan="4" class="text-center">No expenses found</td>';
-				tableBody.appendChild(row);
-				return;
-			}
+                        if (data.length === 0) {
+                                const row = document.createElement("tr");
+                                row.innerHTML =
+                                        '<td colspan="5" class="text-center">No expenses found</td>';
+                                tableBody.appendChild(row);
+                                return;
+                        }
 
 			data.forEach((expense) => {
 				const row = document.createElement("tr");
@@ -381,6 +381,7 @@ function loadRecentExpenses() {
                     ${expense.category.name}
                 </td>
                 <td>${expense.description || "-"}</td>
+                <td>${expense.payment_method || "-"}</td>
                 <td>${formatCurrency(expense.amount)}</td>
             `;
 				tableBody.appendChild(row);
@@ -489,8 +490,9 @@ function loadBudgetStatus() {
 
 function loadExpenses() {
 	// Get filter values
-	const dateFilter = document.getElementById("expense-date-filter").value;
-	const categoryId = document.getElementById("expense-category-filter").value;
+        const dateFilter = document.getElementById("expense-date-filter").value;
+        const categoryId = document.getElementById("expense-category-filter").value;
+        const methodFilter = document.getElementById("expense-method-filter")?.value;
 
 	let startDate = null;
 	let endDate = null;
@@ -523,9 +525,12 @@ function loadExpenses() {
 	if (endDate) {
 		queryString += `${queryString ? "&" : ""}end_date=${formatDate(endDate)}`;
 	}
-	if (categoryId) {
-		queryString += `${queryString ? "&" : ""}category_id=${categoryId}`;
-	}
+        if (categoryId) {
+                queryString += `${queryString ? "&" : ""}category_id=${categoryId}`;
+        }
+        if (methodFilter) {
+                queryString += `${queryString ? "&" : ""}payment_method=${methodFilter}`;
+        }
 
 	return fetch(`${API_URL}/api/expense/expenses?${queryString}`, {
 		headers: {
@@ -540,13 +545,13 @@ function loadExpenses() {
 			const tableBody = document.getElementById("expenses-table");
 			tableBody.innerHTML = "";
 
-			if (expenses.length === 0) {
-				const row = document.createElement("tr");
-				row.innerHTML =
-					'<td colspan="5" class="text-center">No expenses found</td>';
-				tableBody.appendChild(row);
-				return;
-			}
+                        if (expenses.length === 0) {
+                                const row = document.createElement("tr");
+                                row.innerHTML =
+                                        '<td colspan="6" class="text-center">No expenses found</td>';
+                                tableBody.appendChild(row);
+                                return;
+                        }
 
 			expenses.forEach((expense) => {
 				const row = document.createElement("tr");
@@ -559,6 +564,7 @@ function loadExpenses() {
                     ${expense.category.name}
                 </td>
                 <td>${expense.description || "-"}</td>
+                <td>${expense.payment_method || "-"}</td>
                 <td>${formatCurrency(expense.amount)}</td>
                 <td>
                     <button class="btn btn-sm btn-outline-primary edit-expense-btn" data-id="${
@@ -988,9 +994,10 @@ function loadDashboardData() {
 // Expense CRUD functions
 function saveExpense() {
 	const amount = document.getElementById("expense-amount").value;
-	const categoryId = document.getElementById("expense-category").value;
-	const date = document.getElementById("expense-date").value;
-	const description = document.getElementById("expense-description").value;
+        const categoryId = document.getElementById("expense-category").value;
+        const date = document.getElementById("expense-date").value;
+        const description = document.getElementById("expense-description").value;
+        const method = document.getElementById("expense-method")?.value;
 
 	if (!amount || !categoryId || !date) {
 		showToast("Please fill in all required fields", "error");
@@ -1003,12 +1010,13 @@ function saveExpense() {
 			"Content-Type": "application/json",
 			Authorization: `Bearer ${token}`,
 		},
-		body: JSON.stringify({
-			amount: parseFloat(amount),
-			category_id: parseInt(categoryId),
-			date: date,
-			description: description,
-		}),
+                body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        category_id: parseInt(categoryId),
+                        date: date,
+                        description: description,
+                        payment_method: method,
+                }),
 	})
 		.then((response) => response.json())
 		.then((data) => {
@@ -1056,13 +1064,15 @@ function openEditExpenseModal(expenseId) {
 	// Populate form
 	document.getElementById("edit-expense-id").value = expense.id;
 	document.getElementById("edit-expense-amount").value = expense.amount;
-	document.getElementById("edit-expense-category").value = expense.category_id;
-	document.getElementById("edit-expense-date").value = expense.date.substring(
-		0,
-		10
-	); // YYYY-MM-DD format
-	document.getElementById("edit-expense-description").value =
-		expense.description || "";
+        document.getElementById("edit-expense-category").value = expense.category_id;
+        document.getElementById("edit-expense-date").value = expense.date.substring(
+                0,
+                10
+        ); // YYYY-MM-DD format
+        document.getElementById("edit-expense-description").value =
+                expense.description || "";
+        const methodSelect = document.getElementById("edit-expense-method");
+        if (methodSelect) methodSelect.value = expense.payment_method || "cash";
 
 	// Show modal
 	const modal = new bootstrap.Modal(
@@ -1075,8 +1085,9 @@ function updateExpense() {
 	const expenseId = document.getElementById("edit-expense-id").value;
 	const amount = document.getElementById("edit-expense-amount").value;
 	const categoryId = document.getElementById("edit-expense-category").value;
-	const date = document.getElementById("edit-expense-date").value;
-	const description = document.getElementById("edit-expense-description").value;
+        const date = document.getElementById("edit-expense-date").value;
+        const description = document.getElementById("edit-expense-description").value;
+        const method = document.getElementById("edit-expense-method")?.value;
 
 	if (!amount || !categoryId || !date) {
 		showToast("Please fill in all required fields", "error");
@@ -1089,12 +1100,13 @@ function updateExpense() {
 			"Content-Type": "application/json",
 			Authorization: `Bearer ${token}`,
 		},
-		body: JSON.stringify({
-			amount: parseFloat(amount),
-			category_id: parseInt(categoryId),
-			date: date,
-			description: description,
-		}),
+                body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        category_id: parseInt(categoryId),
+                        date: date,
+                        description: description,
+                        payment_method: method,
+                }),
 	})
 		.then((response) => response.json())
 		.then((data) => {

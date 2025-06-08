@@ -29,10 +29,10 @@ The main dashboard provides a quick snapshot of your financial status:
 - Budget status with progress bars
 
 ### Expense Management
-- **Add Expenses**: Record new expenses with amount, category, date, and description
+- **Add Expenses**: Record new expenses with amount, category, payment method, date, and description
 - **Edit Expenses**: Modify existing expense details
 - **Delete Expenses**: Remove unwanted expense entries
-- **Filter Expenses**: View expenses by date range and category
+- **Filter Expenses**: View expenses by date range, category, or payment method
 - **Expense History**: Browse through all your past expenses
 
 ### Budget Management
