@@ -95,6 +95,12 @@ def incomes_page():
     return send_from_directory(app.static_folder, 'incomes.html')
 
 
+@app.route('/savings')
+@login_required
+def savings_page():
+    return send_from_directory(app.static_folder, 'savings.html')
+
+
 @app.route('/budgets')
 @login_required
 def budgets_page():
