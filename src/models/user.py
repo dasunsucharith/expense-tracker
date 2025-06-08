@@ -16,6 +16,7 @@ class User(db.Model):
     expenses = db.relationship('Expense', backref='user', lazy=True, cascade="all, delete-orphan")
     budgets = db.relationship('Budget', backref='user', lazy=True, cascade="all, delete-orphan")
     incomes = db.relationship('Income', backref='user', lazy=True, cascade="all, delete-orphan")
+    savings = db.relationship('Saving', backref='user', lazy=True, cascade="all, delete-orphan")
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

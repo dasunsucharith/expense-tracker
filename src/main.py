@@ -13,6 +13,7 @@ from src.routes.user import user_bp, login_required
 from src.routes.expense import expense_bp
 from src.routes.budget import budget_bp
 from src.routes.income import income_bp
+from src.routes.saving import saving_bp
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
@@ -24,6 +25,7 @@ app.register_blueprint(user_bp, url_prefix='/api/user')
 app.register_blueprint(expense_bp, url_prefix='/api/expense')
 app.register_blueprint(budget_bp, url_prefix='/api/budget')
 app.register_blueprint(income_bp, url_prefix='/api/income')
+app.register_blueprint(saving_bp, url_prefix='/api/saving')
 
 # Enable database
 app.config['SQLALCHEMY_DATABASE_URI'] = (

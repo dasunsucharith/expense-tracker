@@ -6,6 +6,7 @@ let categories = [];
 let expenses = [];
 let incomes = [];
 let budgets = [];
+let savings = [];
 let charts = {};
 
 // Cookie helpers
@@ -47,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const dashboardPage = document.getElementById("dashboard-page");
         const expensesPage = document.getElementById("expenses-page");
         const incomesPage = document.getElementById("incomes-page");
+        const savingsPage = document.getElementById("savings-page");
         const budgetsPage = document.getElementById("budgets-page");
         const reportsPage = document.getElementById("reports-page");
         const profilePage = document.getElementById("profile-page");
@@ -61,6 +63,9 @@ document.addEventListener("DOMContentLoaded", function () {
         } else if (incomesPage) {
             if (!token) { window.location.href = "/login"; return; }
             loadIncomes();
+        } else if (savingsPage) {
+            if (!token) { window.location.href = "/login"; return; }
+            loadSavings();
         } else if (budgetsPage) {
             if (!token) { window.location.href = "/login"; return; }
             loadCategories().then(() => loadBudgets());
@@ -109,6 +114,16 @@ function setupEventListeners() {
         const deleteIncomeBtn = document.getElementById("delete-income");
         if (deleteIncomeBtn) deleteIncomeBtn.addEventListener("click", deleteIncome);
 
+        // Saving form
+        const saveSavingBtn = document.getElementById("save-saving");
+        if (saveSavingBtn) saveSavingBtn.addEventListener("click", saveSaving);
+
+        const updateSavingBtn = document.getElementById("update-saving");
+        if (updateSavingBtn) updateSavingBtn.addEventListener("click", updateSaving);
+
+        const deleteSavingBtn = document.getElementById("delete-saving");
+        if (deleteSavingBtn) deleteSavingBtn.addEventListener("click", deleteSaving);
+
         const incomeTypeSelect = document.getElementById("income-type");
         if (incomeTypeSelect) incomeTypeSelect.addEventListener("change", toggleIncomeOther);
 
@@ -137,6 +152,12 @@ function setupEventListeners() {
 
         const applyIncomeFilters = document.getElementById("apply-income-filters");
         if (applyIncomeFilters) applyIncomeFilters.addEventListener("click", loadIncomes);
+
+        const savingDateFilter = document.getElementById("saving-date-filter");
+        if (savingDateFilter) savingDateFilter.addEventListener("change", toggleSavingCustomDateRange);
+
+        const applySavingFilters = document.getElementById("apply-saving-filters");
+        if (applySavingFilters) applySavingFilters.addEventListener("click", loadSavings);
 
 	// Reports
         const reportPeriod = document.getElementById("report-period");
@@ -376,10 +397,41 @@ function loadDashboardSummary() {
 
                         return data;
                 })
-		.catch((error) => {
-			console.error("Error loading dashboard summary:", error);
-			showToast("Failed to load dashboard summary", "error");
-		});
+                .catch((error) => {
+                        console.error("Error loading dashboard summary:", error);
+                        showToast("Failed to load dashboard summary", "error");
+                });
+}
+
+function loadSavingsSummary() {
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+        const startDate = formatDate(firstDay);
+        const endDate = formatDate(lastDay);
+
+        return fetch(
+                `${API_URL}/api/saving/dashboard/summary?start_date=${startDate}&end_date=${endDate}`,
+                {
+                        headers: {
+                                Authorization: `Bearer ${token}`,
+                        },
+                }
+        )
+                .then((response) => response.json())
+                .then((data) => {
+                        const totalEl = document.getElementById("total-savings");
+                        if (totalEl) totalEl.textContent = formatCurrency(data.total_savings);
+                        const countEl = document.getElementById("saving-count");
+                        if (countEl) countEl.textContent = data.saving_count;
+
+                        return data;
+                })
+                .catch((error) => {
+                        console.error("Error loading savings summary:", error);
+                        showToast("Failed to load savings summary", "error");
+                });
 }
 
 function loadRecentExpenses() {
@@ -1015,6 +1067,7 @@ function loadDashboardData() {
                 .then(() =>
                         Promise.all([
                                 loadDashboardSummary(),
+                                loadSavingsSummary(),
                                 loadRecentExpenses(),
                                 loadBudgetStatus(),
                         ])
@@ -1427,6 +1480,202 @@ function toggleEditIncomeOther() {
                 } else {
                         group.classList.add("d-none");
                 }
+        }
+}
+
+// Saving CRUD functions
+function loadSavings() {
+        const dateFilter = document.getElementById("saving-date-filter").value;
+
+        let startDate = null;
+        let endDate = null;
+        const today = new Date();
+
+        if (dateFilter === "this-month") {
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        } else if (dateFilter === "last-month") {
+                startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+        } else if (dateFilter === "last-3-months") {
+                startDate = new Date(today.getFullYear(), today.getMonth() - 3, 1);
+                endDate = today;
+        } else if (dateFilter === "this-year") {
+                startDate = new Date(today.getFullYear(), 0, 1);
+                endDate = new Date(today.getFullYear(), 11, 31);
+        } else if (dateFilter === "custom") {
+                startDate = document.getElementById("saving-start-date").valueAsDate;
+                endDate = document.getElementById("saving-end-date").valueAsDate;
+        }
+
+        let queryString = "";
+        if (startDate) queryString += `start_date=${formatDate(startDate)}`;
+        if (endDate) queryString += `${queryString ? "&" : ""}end_date=${formatDate(endDate)}`;
+
+        return fetch(`${API_URL}/api/saving/savings?${queryString}`, {
+                headers: { Authorization: `Bearer ${token}` },
+        })
+                .then((response) => response.json())
+                .then((data) => {
+                        savings = data;
+                        const tableBody = document.getElementById("savings-table");
+                        if (!tableBody) return savings;
+                        tableBody.innerHTML = "";
+
+                        if (savings.length === 0) {
+                                const row = document.createElement("tr");
+                                row.innerHTML = '<td colspan="4" class="text-center">No savings found</td>';
+                                tableBody.appendChild(row);
+                                return savings;
+                        }
+
+                        savings.forEach((saving) => {
+                                const row = document.createElement("tr");
+                                row.innerHTML = `
+                <td>${formatDate(new Date(saving.date))}</td>
+                <td>${saving.description || "-"}</td>
+                <td>${formatCurrency(saving.amount)}</td>
+                <td><button class="btn btn-sm btn-outline-primary edit-saving-btn" data-id="${saving.id}"><i class="fas fa-edit"></i></button></td>`;
+                                tableBody.appendChild(row);
+                        });
+
+                        document.querySelectorAll(".edit-saving-btn").forEach((btn) => {
+                                btn.addEventListener("click", function () {
+                                        const id = this.getAttribute("data-id");
+                                        openEditSavingModal(id);
+                                });
+                        });
+
+                        return savings;
+                })
+                .catch((error) => {
+                        console.error("Error loading savings:", error);
+                        showToast("Failed to load savings", "error");
+                });
+}
+
+function saveSaving() {
+        const amount = document.getElementById("saving-amount").value;
+        const date = document.getElementById("saving-date").value;
+        const description = document.getElementById("saving-description").value;
+
+        if (!amount || !date) {
+                showToast("Please fill in all required fields", "error");
+                return;
+        }
+
+        fetch(`${API_URL}/api/saving/savings`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        date: date,
+                        description: description,
+                }),
+        })
+                .then((response) => response.json())
+                .then((data) => {
+                        if (data.id) {
+                                showToast("Saving added successfully", "success");
+                                const modal = bootstrap.Modal.getInstance(document.getElementById("addSavingModal"));
+                                modal.hide();
+                                document.getElementById("add-saving-form").reset();
+                                document.getElementById("saving-date").valueAsDate = new Date();
+                                loadSavings();
+                        } else {
+                                showToast(data.message || "Failed to add saving", "error");
+                        }
+                })
+                .catch((error) => {
+                        console.error("Error saving saving:", error);
+                        showToast("An error occurred while saving", "error");
+                });
+}
+
+function openEditSavingModal(id) {
+        const saving = savings.find((s) => s.id == id);
+        if (!saving) {
+                showToast("Saving not found", "error");
+                return;
+        }
+        document.getElementById("edit-saving-id").value = saving.id;
+        document.getElementById("edit-saving-amount").value = saving.amount;
+        document.getElementById("edit-saving-date").value = saving.date.substring(0, 10);
+        document.getElementById("edit-saving-description").value = saving.description || "";
+        const modal = new bootstrap.Modal(document.getElementById("editSavingModal"));
+        modal.show();
+}
+
+function updateSaving() {
+        const savingId = document.getElementById("edit-saving-id").value;
+        const amount = document.getElementById("edit-saving-amount").value;
+        const date = document.getElementById("edit-saving-date").value;
+        const description = document.getElementById("edit-saving-description").value;
+
+        if (!amount || !date) {
+                showToast("Please fill in all required fields", "error");
+                return;
+        }
+
+        fetch(`${API_URL}/api/saving/savings/${savingId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        date: date,
+                        description: description,
+                }),
+        })
+                .then((response) => response.json())
+                .then((data) => {
+                        if (data.id) {
+                                showToast("Saving updated successfully", "success");
+                                const modal = bootstrap.Modal.getInstance(document.getElementById("editSavingModal"));
+                                modal.hide();
+                                loadSavings();
+                        } else {
+                                showToast(data.message || "Failed to update saving", "error");
+                        }
+                })
+                .catch((error) => {
+                        console.error("Error updating saving:", error);
+                        showToast("An error occurred while updating", "error");
+                });
+}
+
+function deleteSaving() {
+        const savingId = document.getElementById("edit-saving-id").value;
+        if (confirm("Are you sure you want to delete this saving?")) {
+                fetch(`${API_URL}/api/saving/savings/${savingId}`, {
+                        method: "DELETE",
+                        headers: { Authorization: `Bearer ${token}` },
+                })
+                        .then((response) => response.json())
+                        .then((data) => {
+                                if (data.message === "Saving deleted successfully") {
+                                        showToast("Saving deleted successfully", "success");
+                                        const modal = bootstrap.Modal.getInstance(document.getElementById("editSavingModal"));
+                                        modal.hide();
+                                        loadSavings();
+                                } else {
+                                        showToast(data.message || "Failed to delete saving", "error");
+                                }
+                        })
+                        .catch((error) => {
+                                console.error("Error deleting saving:", error);
+                                showToast("An error occurred while deleting", "error");
+                        });
+        }
+}
+
+function toggleSavingCustomDateRange() {
+        const dateFilter = document.getElementById("saving-date-filter").value;
+        const range = document.getElementById("saving-custom-date-range");
+
+        if (dateFilter === "custom") {
+                range.classList.remove("d-none");
+        } else {
+                range.classList.add("d-none");
         }
 }
 
