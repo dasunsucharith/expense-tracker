@@ -4,6 +4,7 @@ let token = localStorage.getItem("token");
 let currentUser = null;
 let categories = [];
 let expenses = [];
+let incomes = [];
 let budgets = [];
 let charts = {};
 
@@ -45,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         const dashboardPage = document.getElementById("dashboard-page");
         const expensesPage = document.getElementById("expenses-page");
+        const incomesPage = document.getElementById("incomes-page");
         const budgetsPage = document.getElementById("budgets-page");
         const reportsPage = document.getElementById("reports-page");
         const profilePage = document.getElementById("profile-page");
@@ -56,6 +58,9 @@ document.addEventListener("DOMContentLoaded", function () {
         } else if (expensesPage) {
             if (!token) { window.location.href = "/login"; return; }
             loadCategories().then(() => loadExpenses());
+        } else if (incomesPage) {
+            if (!token) { window.location.href = "/login"; return; }
+            loadIncomes();
         } else if (budgetsPage) {
             if (!token) { window.location.href = "/login"; return; }
             loadCategories().then(() => loadBudgets());
@@ -84,7 +89,7 @@ function setupEventListeners() {
         const logoutLink = document.getElementById("logout-link");
         if (logoutLink) logoutLink.addEventListener("click", handleLogout);
 
-	// Expense form
+        // Expense form
         const saveExpenseBtn = document.getElementById("save-expense");
         if (saveExpenseBtn) saveExpenseBtn.addEventListener("click", saveExpense);
 
@@ -93,6 +98,22 @@ function setupEventListeners() {
 
         const deleteExpenseBtn = document.getElementById("delete-expense");
         if (deleteExpenseBtn) deleteExpenseBtn.addEventListener("click", deleteExpense);
+
+        // Income form
+        const saveIncomeBtn = document.getElementById("save-income");
+        if (saveIncomeBtn) saveIncomeBtn.addEventListener("click", saveIncome);
+
+        const updateIncomeBtn = document.getElementById("update-income");
+        if (updateIncomeBtn) updateIncomeBtn.addEventListener("click", updateIncome);
+
+        const deleteIncomeBtn = document.getElementById("delete-income");
+        if (deleteIncomeBtn) deleteIncomeBtn.addEventListener("click", deleteIncome);
+
+        const incomeTypeSelect = document.getElementById("income-type");
+        if (incomeTypeSelect) incomeTypeSelect.addEventListener("change", toggleIncomeOther);
+
+        const editIncomeTypeSelect = document.getElementById("edit-income-type");
+        if (editIncomeTypeSelect) editIncomeTypeSelect.addEventListener("change", toggleEditIncomeOther);
 
 	// Budget form
         const saveBudgetBtn = document.getElementById("save-budget");
@@ -110,6 +131,12 @@ function setupEventListeners() {
 
         const applyExpenseFilters = document.getElementById("apply-expense-filters");
         if (applyExpenseFilters) applyExpenseFilters.addEventListener("click", loadExpenses);
+
+        const incomeDateFilter = document.getElementById("income-date-filter");
+        if (incomeDateFilter) incomeDateFilter.addEventListener("change", toggleIncomeCustomDateRange);
+
+        const applyIncomeFilters = document.getElementById("apply-income-filters");
+        if (applyIncomeFilters) applyIncomeFilters.addEventListener("click", loadIncomes);
 
 	// Reports
         const reportPeriod = document.getElementById("report-period");
@@ -1141,7 +1168,7 @@ function updateExpense() {
 }
 
 function deleteExpense() {
-	const expenseId = document.getElementById("edit-expense-id").value;
+        const expenseId = document.getElementById("edit-expense-id").value;
 
 	if (confirm("Are you sure you want to delete this expense?")) {
 		fetch(`${API_URL}/api/expense/expenses/${expenseId}`, {
@@ -1176,7 +1203,231 @@ function deleteExpense() {
 				console.error("Error deleting expense:", error);
 				showToast("An error occurred while deleting the expense", "error");
 			});
-	}
+        }
+}
+
+// Income CRUD functions
+function loadIncomes() {
+        const dateFilter = document.getElementById("income-date-filter").value;
+        const typeFilter = document.getElementById("income-type-filter").value;
+
+        let startDate = null;
+        let endDate = null;
+        const today = new Date();
+
+        if (dateFilter === "this-month") {
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        } else if (dateFilter === "last-month") {
+                startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+        } else if (dateFilter === "last-3-months") {
+                startDate = new Date(today.getFullYear(), today.getMonth() - 3, 1);
+                endDate = today;
+        } else if (dateFilter === "this-year") {
+                startDate = new Date(today.getFullYear(), 0, 1);
+                endDate = new Date(today.getFullYear(), 11, 31);
+        } else if (dateFilter === "custom") {
+                startDate = document.getElementById("income-start-date").valueAsDate;
+                endDate = document.getElementById("income-end-date").valueAsDate;
+        }
+
+        let queryString = "";
+        if (startDate) queryString += `start_date=${formatDate(startDate)}`;
+        if (endDate) queryString += `${queryString ? "&" : ""}end_date=${formatDate(endDate)}`;
+        if (typeFilter) queryString += `${queryString ? "&" : ""}income_type=${typeFilter}`;
+
+        return fetch(`${API_URL}/api/income/incomes?${queryString}`, {
+                headers: { Authorization: `Bearer ${token}` },
+        })
+                .then((response) => response.json())
+                .then((data) => {
+                        incomes = data;
+                        const tableBody = document.getElementById("incomes-table");
+                        if (!tableBody) return incomes;
+                        tableBody.innerHTML = "";
+
+                        if (incomes.length === 0) {
+                                const row = document.createElement("tr");
+                                row.innerHTML = '<td colspan="5" class="text-center">No incomes found</td>';
+                                tableBody.appendChild(row);
+                                return incomes;
+                        }
+
+                        incomes.forEach((income) => {
+                                const row = document.createElement("tr");
+                                const typeText = income.income_type === "Other" && income.other_source ? `${income.income_type} - ${income.other_source}` : income.income_type;
+                                row.innerHTML = `
+                <td>${formatDate(new Date(income.date))}</td>
+                <td>${typeText}</td>
+                <td>${income.description || "-"}</td>
+                <td>${formatCurrency(income.amount)}</td>
+                <td><button class="btn btn-sm btn-outline-primary edit-income-btn" data-id="${income.id}"><i class="fas fa-edit"></i></button></td>`;
+                                tableBody.appendChild(row);
+                        });
+
+                        document.querySelectorAll(".edit-income-btn").forEach((btn) => {
+                                btn.addEventListener("click", function () {
+                                        const id = this.getAttribute("data-id");
+                                        openEditIncomeModal(id);
+                                });
+                        });
+
+                        return incomes;
+                })
+                .catch((error) => {
+                        console.error("Error loading incomes:", error);
+                        showToast("Failed to load incomes", "error");
+                });
+}
+
+function saveIncome() {
+        const amount = document.getElementById("income-amount").value;
+        const type = document.getElementById("income-type").value;
+        const other = document.getElementById("other-source").value;
+        const date = document.getElementById("income-date").value;
+        const description = document.getElementById("income-description").value;
+
+        if (!amount || !type || !date) {
+                showToast("Please fill in all required fields", "error");
+                return;
+        }
+
+        fetch(`${API_URL}/api/income/incomes`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        income_type: type,
+                        other_source: other || null,
+                        date: date,
+                        description: description,
+                }),
+        })
+                .then((response) => response.json())
+                .then((data) => {
+                        if (data.id) {
+                                showToast("Income added successfully", "success");
+                                const modal = bootstrap.Modal.getInstance(document.getElementById("addIncomeModal"));
+                                modal.hide();
+                                document.getElementById("add-income-form").reset();
+                                document.getElementById("income-date").valueAsDate = new Date();
+                                loadIncomes();
+                        } else {
+                                showToast(data.message || "Failed to add income", "error");
+                        }
+                })
+                .catch((error) => {
+                        console.error("Error saving income:", error);
+                        showToast("An error occurred while saving the income", "error");
+                });
+}
+
+function openEditIncomeModal(id) {
+        const income = incomes.find((i) => i.id == id);
+        if (!income) {
+                showToast("Income not found", "error");
+                return;
+        }
+        document.getElementById("edit-income-id").value = income.id;
+        document.getElementById("edit-income-amount").value = income.amount;
+        document.getElementById("edit-income-type").value = income.income_type;
+        document.getElementById("edit-other-source").value = income.other_source || "";
+        toggleEditIncomeOther();
+        document.getElementById("edit-income-date").value = income.date.substring(0, 10);
+        document.getElementById("edit-income-description").value = income.description || "";
+        const modal = new bootstrap.Modal(document.getElementById("editIncomeModal"));
+        modal.show();
+}
+
+function updateIncome() {
+        const incomeId = document.getElementById("edit-income-id").value;
+        const amount = document.getElementById("edit-income-amount").value;
+        const type = document.getElementById("edit-income-type").value;
+        const other = document.getElementById("edit-other-source").value;
+        const date = document.getElementById("edit-income-date").value;
+        const description = document.getElementById("edit-income-description").value;
+
+        if (!amount || !type || !date) {
+                showToast("Please fill in all required fields", "error");
+                return;
+        }
+
+        fetch(`${API_URL}/api/income/incomes/${incomeId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        income_type: type,
+                        other_source: other || null,
+                        date: date,
+                        description: description,
+                }),
+        })
+                .then((response) => response.json())
+                .then((data) => {
+                        if (data.id) {
+                                showToast("Income updated successfully", "success");
+                                const modal = bootstrap.Modal.getInstance(document.getElementById("editIncomeModal"));
+                                modal.hide();
+                                loadIncomes();
+                        } else {
+                                showToast(data.message || "Failed to update income", "error");
+                        }
+                })
+                .catch((error) => {
+                        console.error("Error updating income:", error);
+                        showToast("An error occurred while updating the income", "error");
+                });
+}
+
+function deleteIncome() {
+        const incomeId = document.getElementById("edit-income-id").value;
+        if (confirm("Are you sure you want to delete this income?")) {
+                fetch(`${API_URL}/api/income/incomes/${incomeId}`, {
+                        method: "DELETE",
+                        headers: { Authorization: `Bearer ${token}` },
+                })
+                        .then((response) => response.json())
+                        .then((data) => {
+                                if (data.message === "Income deleted successfully") {
+                                        showToast("Income deleted successfully", "success");
+                                        const modal = bootstrap.Modal.getInstance(document.getElementById("editIncomeModal"));
+                                        modal.hide();
+                                        loadIncomes();
+                                } else {
+                                        showToast(data.message || "Failed to delete income", "error");
+                                }
+                        })
+                        .catch((error) => {
+                                console.error("Error deleting income:", error);
+                                showToast("An error occurred while deleting the income", "error");
+                        });
+        }
+}
+
+function toggleIncomeOther() {
+        const type = document.getElementById("income-type").value;
+        const group = document.getElementById("other-source-group");
+        if (group) {
+                if (type === "Other") {
+                        group.classList.remove("d-none");
+                } else {
+                        group.classList.add("d-none");
+                }
+        }
+}
+
+function toggleEditIncomeOther() {
+        const type = document.getElementById("edit-income-type").value;
+        const group = document.getElementById("edit-other-source-group");
+        if (group) {
+                if (type === "Other") {
+                        group.classList.remove("d-none");
+                } else {
+                        group.classList.add("d-none");
+                }
+        }
 }
 
 // Budget CRUD functions
@@ -2156,14 +2407,25 @@ function updateCurrencySymbols() {
 }
 
 function toggleCustomDateRange() {
-	const dateFilter = document.getElementById("expense-date-filter").value;
-	const customDateRange = document.getElementById("custom-date-range");
+        const dateFilter = document.getElementById("expense-date-filter").value;
+        const customDateRange = document.getElementById("custom-date-range");
 
 	if (dateFilter === "custom") {
 		customDateRange.classList.remove("d-none");
 	} else {
 		customDateRange.classList.add("d-none");
 	}
+}
+
+function toggleIncomeCustomDateRange() {
+        const dateFilter = document.getElementById("income-date-filter").value;
+        const range = document.getElementById("income-custom-date-range");
+
+        if (dateFilter === "custom") {
+                range.classList.remove("d-none");
+        } else {
+                range.classList.add("d-none");
+        }
 }
 
 function toggleReportCustomDateRange() {
