@@ -41,6 +41,12 @@ The main dashboard provides a quick snapshot of your financial status:
 - **Delete Incomes**: Remove income records you no longer need
 - **Filter Incomes**: View incomes by date range or type
 
+### Savings Management
+- **Add Savings**: Record money you have saved with amount, date, and description
+- **Edit Savings**: Modify existing saving entries
+- **Delete Savings**: Remove savings records you no longer need
+- **Filter Savings**: View savings by date range
+
 ### Budget Management
 - **Create Budgets**: Set up budgets with name, amount, category (optional), and time period
 - **Edit Budgets**: Modify budget details

@@ -35,6 +35,7 @@
 - [x] Test expense tracking functionality
 - [x] Test budget tracking functionality
 - [x] Test data visualization
+- [ ] Add savings tracking and dashboard summary
 - [x] Test responsive design
 
 ## Deployment
