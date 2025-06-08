@@ -1043,13 +1043,7 @@ function saveExpense() {
 				document.getElementById("expense-date").valueAsDate = new Date();
 
                                 // Reload data
-                                const expensesLink = document.querySelector(
-                                        '.nav-link[data-page="expenses"]'
-                                );
-                                if (
-                                        expensesLink &&
-                                        expensesLink.classList.contains("active")
-                                ) {
+                                if (document.getElementById("expenses-page")) {
                                         loadExpenses();
                                 } else {
                                         loadDashboardData();
@@ -1131,13 +1125,7 @@ function updateExpense() {
 				modal.hide();
 
                                 // Reload data
-                                const expensesLink = document.querySelector(
-                                        '.nav-link[data-page="expenses"]'
-                                );
-                                if (
-                                        expensesLink &&
-                                        expensesLink.classList.contains("active")
-                                ) {
+                                if (document.getElementById("expenses-page")) {
                                         loadExpenses();
                                 } else {
                                         loadDashboardData();
@@ -1175,13 +1163,7 @@ function deleteExpense() {
 					modal.hide();
 
                                         // Reload data
-                                        const expensesLink = document.querySelector(
-                                                '.nav-link[data-page="expenses"]'
-                                        );
-                                        if (
-                                                expensesLink &&
-                                                expensesLink.classList.contains("active")
-                                        ) {
+                                        if (document.getElementById("expenses-page")) {
                                                 loadExpenses();
                                         } else {
                                                 loadDashboardData();
@@ -1263,13 +1245,7 @@ function saveBudget() {
 				document.getElementById("add-budget-form").reset();
 
                                 // Reload data
-                                const budgetsLink = document.querySelector(
-                                        '.nav-link[data-page="budgets"]'
-                                );
-                                if (
-                                        budgetsLink &&
-                                        budgetsLink.classList.contains("active")
-                                ) {
+                                if (document.getElementById("budgets-page")) {
                                         loadBudgets();
                                 } else {
                                         loadDashboardData();
@@ -1348,13 +1324,7 @@ function updateBudget() {
 				modal.hide();
 
                                 // Reload data
-                                const budgetsLink = document.querySelector(
-                                        '.nav-link[data-page="budgets"]'
-                                );
-                                if (
-                                        budgetsLink &&
-                                        budgetsLink.classList.contains("active")
-                                ) {
+                                if (document.getElementById("budgets-page")) {
                                         loadBudgets();
                                 } else {
                                         loadDashboardData();
@@ -1392,13 +1362,7 @@ function deleteBudget() {
 					modal.hide();
 
                                         // Reload data
-                                        const budgetsLink = document.querySelector(
-                                                '.nav-link[data-page="budgets"]'
-                                        );
-                                        if (
-                                                budgetsLink &&
-                                                budgetsLink.classList.contains("active")
-                                        ) {
+                                        if (document.getElementById("budgets-page")) {
                                                 loadBudgets();
                                         } else {
                                                 loadDashboardData();
