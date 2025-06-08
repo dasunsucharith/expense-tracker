@@ -18,6 +18,7 @@ from src.routes.saving import saving_bp
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
+app.url_map.strict_slashes = False  # Allow routes with or without trailing slash
 CORS(app)  # Enable CORS for all routes
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
