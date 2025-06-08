@@ -12,6 +12,7 @@ from src.models.user import db
 from src.routes.user import user_bp, login_required
 from src.routes.expense import expense_bp
 from src.routes.budget import budget_bp
+from src.routes.income import income_bp
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
@@ -22,6 +23,7 @@ app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
 app.register_blueprint(user_bp, url_prefix='/api/user')
 app.register_blueprint(expense_bp, url_prefix='/api/expense')
 app.register_blueprint(budget_bp, url_prefix='/api/budget')
+app.register_blueprint(income_bp, url_prefix='/api/income')
 
 # Enable database
 app.config['SQLALCHEMY_DATABASE_URI'] = (
@@ -81,6 +83,12 @@ def dashboard_page():
 @login_required
 def expenses_page():
     return send_from_directory(app.static_folder, 'expenses.html')
+
+
+@app.route('/incomes')
+@login_required
+def incomes_page():
+    return send_from_directory(app.static_folder, 'incomes.html')
 
 
 @app.route('/budgets')

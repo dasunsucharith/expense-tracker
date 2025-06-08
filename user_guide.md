@@ -35,6 +35,12 @@ The main dashboard provides a quick snapshot of your financial status:
 - **Filter Expenses**: View expenses by date range, category, or payment method
 - **Expense History**: Browse through all your past expenses
 
+### Income Management
+- **Add Incomes**: Record new income sources with amount, type, date, and description
+- **Edit Incomes**: Modify existing income entries
+- **Delete Incomes**: Remove income records you no longer need
+- **Filter Incomes**: View incomes by date range or type
+
 ### Budget Management
 - **Create Budgets**: Set up budgets with name, amount, category (optional), and time period
 - **Edit Budgets**: Modify budget details
@@ -54,6 +60,13 @@ The main dashboard provides a quick snapshot of your financial status:
 1. Open `/` and choose **Login** or **Register**
 2. After logging in you will arrive at `/dashboard`
 3. Use the navigation bar to visit the expenses, budgets, reports or profile pages
+
+### Adding an Income
+1. Click the "Incomes" tab in the navigation menu
+2. Click the "Add Income" button
+3. Fill in the income details (amount, type, date, description)
+4. Provide an additional source when choosing "Other"
+5. Click "Save Income"
 
 ### Adding an Expense
 1. Click the "Expenses" tab in the navigation menu
