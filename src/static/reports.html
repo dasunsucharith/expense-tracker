@@ -1017,75 +1017,9 @@
                 </div>
             </div>
         </div>
+    {% include 'profile_modal.html' %}
 
-        <!-- User Profile Modal -->
-        <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-info text-white">
-                        <h5 class="modal-title" id="profileModalLabel">
-                            <i class="fas fa-user-circle me-2"></i>User Profile
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="text-center mb-4">
-                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                                <i class="fas fa-user fa-2x text-muted"></i>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <strong><i class="fas fa-user me-2"></i>Username:</strong>
-                            </div>
-                            <div class="col-sm-8">
-                                <span id="profile-username">-</span>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <strong><i class="fas fa-envelope me-2"></i>Email:</strong>
-                            </div>
-                            <div class="col-sm-8">
-                                <span id="profile-email">-</span>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <strong><i class="fas fa-calendar me-2"></i>Joined:</strong>
-                            </div>
-                            <div class="col-sm-8">
-                                <span id="profile-created">-</span>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="mb-3">
-                            <label for="profile-currency" class="form-label">
-                                <strong><i class="fas fa-money-bill-wave me-2"></i>Currency</strong>
-                            </label>
-                            <select class="form-select" id="profile-currency">
-                                <option value="USD">🇺🇸 USD - US Dollar</option>
-                                <option value="EUR">🇪🇺 EUR - Euro</option>
-                                <option value="GBP">🇬🇧 GBP - British Pound</option>
-                                <option value="LKR">🇱🇰 LKR - Sri Lankan Rupee</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="fas fa-times me-1"></i>Close
-                        </button>
-                        <button type="button" class="btn btn-info" id="save-profile">
-                            <i class="fas fa-save me-1"></i>Save Changes
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Confirmation Modal -->
+    <!-- Confirmation Modal -->
         <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
