@@ -7,6 +7,231 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <link rel="stylesheet" href="/styles.css">
+        <style>
+            /* Additional expenses-specific styles */
+            .page-header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-radius: 20px;
+                padding: 30px;
+                margin-bottom: 30px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .page-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                transform: rotate(45deg);
+            }
+
+            .filters-card {
+                background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+                border: none;
+                border-radius: 15px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            }
+
+            .expense-table-card {
+                border-radius: 15px;
+                overflow: hidden;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            }
+
+            .table th {
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                font-weight: 600;
+                border: none;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-size: 0.85rem;
+            }
+
+            .table tbody tr {
+                transition: all 0.3s ease;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .table tbody tr:hover {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .category-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 4px 8px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: white;
+            }
+
+            .category-badge::before {
+                content: '';
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                margin-right: 6px;
+                background-color: currentColor;
+            }
+
+            .amount-cell {
+                font-weight: 700;
+                font-size: 1.1rem;
+            }
+
+            .amount-positive {
+                color: #28a745;
+            }
+
+            .amount-negative {
+                color: #dc3545;
+            }
+
+            .filter-label {
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 8px;
+            }
+
+            .action-btn {
+                border-radius: 50%;
+                width: 35px;
+                height: 35px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            }
+
+            .action-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .quick-stats {
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                border-radius: 15px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .quick-stats .stat-item {
+                text-align: center;
+                padding: 10px;
+            }
+
+            .quick-stats .stat-value {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 5px;
+            }
+
+            .quick-stats .stat-label {
+                font-size: 0.9rem;
+                opacity: 0.9;
+            }
+
+            .payment-method-badge {
+                padding: 4px 12px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 500;
+                display: inline-flex;
+                align-items: center;
+            }
+
+            .payment-cash {
+                background-color: #28a745;
+                color: white;
+            }
+
+            .payment-credit {
+                background-color: #007bff;
+                color: white;
+            }
+
+            .date-badge {
+                background-color: #f8f9fa;
+                padding: 4px 8px;
+                border-radius: 8px;
+                font-size: 0.85rem;
+                color: #495057;
+                border-left: 3px solid #667eea;
+            }
+
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+                color: #6c757d;
+            }
+
+            .empty-state i {
+                font-size: 4rem;
+                margin-bottom: 20px;
+                opacity: 0.5;
+            }
+
+            @media (max-width: 768px) {
+                .page-header {
+                    padding: 20px;
+                    text-align: center;
+                }
+
+                .quick-stats .stat-item {
+                    margin-bottom: 15px;
+                }
+
+                .table-responsive {
+                    border-radius: 10px;
+                }
+            }
+
+            /* Animation classes */
+            .fade-in {
+                animation: fadeIn 0.5s ease-in;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .pulse {
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+
+                50% {
+                    transform: scale(1.05);
+                }
+
+                100% {
+                    transform: scale(1);
+                }
+            }
+        </style>
     </head>
     <body>
         <!-- Navigation -->
@@ -531,5 +756,272 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="/app.js"></script>
 
+        <script>
+            // Additional expenses-specific functionality
+            document.addEventListener('DOMContentLoaded', function () {
+                // Set default date for expense form
+                const expenseDate = document.getElementById('expense-date');
+                if (expenseDate) {
+                    expenseDate.valueAsDate = new Date();
+                }
+
+                // Update quick stats when expenses are loaded
+                function updateQuickStats(expenses) {
+                    if (!expenses || expenses.length === 0) {
+                        document.getElementById('total-expenses-display').innerHTML = '<span class="currency-symbol">$</span>0.00';
+                        document.getElementById('expense-count-display').textContent = '0';
+                        document.getElementById('avg-expense-display').innerHTML = '<span class="currency-symbol">$</span>0.00';
+                        document.getElementById('last-expense-date').textContent = '-';
+                        document.getElementById('empty-state').classList.remove('d-none');
+                        return;
+                    }
+
+                    document.getElementById('empty-state').classList.add('d-none');
+
+                    const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+                    const average = total / expenses.length;
+                    const lastExpense = expenses[0]; // Assuming expenses are sorted by date desc
+
+                    // Animate the values
+                    animateValue(document.getElementById('total-expenses-display'), 0, total, 1000, true);
+                    animateValue(document.getElementById('expense-count-display'), 0, expenses.length, 800, false);
+                    animateValue(document.getElementById('avg-expense-display'), 0, average, 1200, true);
+
+                    if (lastExpense) {
+                        const lastDate = new Date(lastExpense.date);
+                        document.getElementById('last-expense-date').textContent = formatDateShort(lastDate);
+                    }
+                }
+
+                // Enhanced table row creation
+                function createExpenseRow(expense) {
+                    const row = document.createElement('tr');
+                    row.className = 'fade-in';
+
+                    const categoryColor = expense.category ? expense.category.color : '#6c757d';
+                    const paymentMethodClass = expense.payment_method === 'cash' ? 'payment-cash' : 'payment-credit';
+                    const paymentMethodIcon = expense.payment_method === 'cash' ? '💵' : '💳';
+
+                    row.innerHTML = `
+                    <td>
+                        <div class="date-badge">
+                            ${formatDate(new Date(expense.date))}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="category-badge" style="background-color: ${categoryColor}">
+                            ${expense.category ? expense.category.name : 'Uncategorized'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="expense-description">
+                            ${expense.description || '<em class="text-muted">No description</em>'}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="payment-method-badge ${paymentMethodClass}">
+                            ${paymentMethodIcon} ${expense.payment_method ? expense.payment_method.charAt(0).toUpperCase() + expense.payment_method.slice(1) : 'Cash'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="amount-cell amount-negative">
+                            ${formatCurrency(expense.amount)}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary action-btn edit-expense-btn" data-id="${expense.id}" title="Edit Expense">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                `;
+
+                    return row;
+                }
+
+                // Override the original loadExpenses function to use enhanced features
+                const originalLoadExpenses = window.loadExpenses;
+                window.loadExpenses = function () {
+                    if (originalLoadExpenses) {
+                        return originalLoadExpenses().then(expenses => {
+                            updateQuickStats(expenses);
+
+                            // Enhanced table population
+                            const tableBody = document.getElementById('expenses-table');
+                            if (tableBody && expenses && expenses.length > 0) {
+                                tableBody.innerHTML = '';
+                                expenses.forEach(expense => {
+                                    const row = createExpenseRow(expense);
+                                    tableBody.appendChild(row);
+                                });
+
+                                // Re-attach event listeners
+                                document.querySelectorAll('.edit-expense-btn').forEach(button => {
+                                    button.addEventListener('click', function () {
+                                        const expenseId = this.getAttribute('data-id');
+                                        openEditExpenseModal(expenseId);
+                                    });
+                                });
+                            }
+
+                            return expenses;
+                        });
+                    }
+                };
+
+                // Export functionality
+                window.exportExpenses = function (format) {
+                    const expenses = window.expenses || [];
+                    if (expenses.length === 0) {
+                        showToast('No expenses to export', 'warning');
+                        return;
+                    }
+
+                    if (format === 'csv') {
+                        exportToCSV(expenses);
+                    } else if (format === 'excel') {
+                        exportToExcel(expenses);
+                    }
+                };
+
+                function exportToCSV(expenses) {
+                    const headers = ['Date', 'Category', 'Description', 'Payment Method', 'Amount'];
+                    const csvContent = [
+                        headers.join(','),
+                        ...expenses.map(exp => [
+                            exp.date,
+                            exp.category ? exp.category.name : 'Uncategorized',
+                            `"${exp.description || ''}"`,
+                            exp.payment_method || 'cash',
+                            exp.amount
+                        ].join(','))
+                    ].join('\n');
+
+                    downloadFile(csvContent, 'expenses.csv', 'text/csv');
+                }
+
+                function exportToExcel(expenses) {
+                    // This would require a library like SheetJS for proper Excel export
+                    // For now, we'll export as CSV with .xlsx extension
+                    showToast('Excel export feature coming soon! Exporting as CSV instead.', 'info');
+                    exportToCSV(expenses);
+                }
+
+                function downloadFile(content, fileName, contentType) {
+                    const blob = new Blob([content], { type: contentType });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    showToast(`Exported ${fileName} successfully!`, 'success');
+                }
+
+                // Utility functions
+                function animateValue(element, start, end, duration, isCurrency = false) {
+                    let startTimestamp = null;
+                    const step = (timestamp) => {
+                        if (!startTimestamp) startTimestamp = timestamp;
+                        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                        const current = progress * (end - start) + start;
+
+                        if (isCurrency) {
+                            const symbol = element.querySelector('.currency-symbol');
+                            if (symbol) {
+                                element.innerHTML = symbol.outerHTML + current.toFixed(2);
+                            } else {
+                                element.textContent = formatCurrency(current);
+                            }
+                        } else {
+                            element.textContent = Math.floor(current);
+                        }
+
+                        if (progress < 1) {
+                            window.requestAnimationFrame(step);
+                        }
+                    };
+                    window.requestAnimationFrame(step);
+                }
+
+                function formatDateShort(date) {
+                    return date.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                }
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', function (e) {
+                    // Ctrl/Cmd + N = Add Expense
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                        e.preventDefault();
+                        const addExpenseModal = new bootstrap.Modal(document.getElementById('addExpenseModal'));
+                        addExpenseModal.show();
+                    }
+
+                    // Ctrl/Cmd + F = Focus on filters
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                        e.preventDefault();
+                        document.getElementById('expense-date-filter').focus();
+                    }
+                });
+
+                // Auto-save draft functionality for forms
+                const formFields = ['expense-amount', 'expense-description'];
+                formFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.addEventListener('input', function () {
+                            localStorage.setItem(`draft_${fieldId}`, this.value);
+                        });
+
+                        // Restore draft on page load
+                        const draftValue = localStorage.getItem(`draft_${fieldId}`);
+                        if (draftValue) {
+                            field.value = draftValue;
+                        }
+                    }
+                });
+
+                // Clear drafts when form is submitted successfully
+                document.getElementById('save-expense')?.addEventListener('click', function () {
+                    formFields.forEach(fieldId => {
+                        localStorage.removeItem(`draft_${fieldId}`);
+                    });
+                });
+
+                // Add tooltips
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+
+                // Intersection Observer for animations
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                // Apply animation observer to cards
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.6s ease-out';
+                    observer.observe(card);
+                });
+            });
+
+            // Enhanced error handling
+            window.addEventListener('error', function (e) {
+                console.error('Expenses page error:', e.error);
+                showToast('An unexpected error occurred. Please refresh the page.', 'error');
+            });
+        </script>
     </body>
 </html>

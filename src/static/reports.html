@@ -7,6 +7,434 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <link rel="stylesheet" href="/styles.css">
+        <style>
+            /* Additional reports-specific styles */
+            .page-header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-radius: 20px;
+                padding: 30px;
+                margin-bottom: 30px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .page-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                transform: rotate(45deg);
+            }
+
+            .quick-stats {
+                background: linear-gradient(135deg, #17a2b8, #138496);
+                color: white;
+                border-radius: 15px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .quick-stats .stat-item {
+                text-align: center;
+                padding: 10px;
+            }
+
+            .quick-stats .stat-value {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 5px;
+            }
+
+            .quick-stats .stat-label {
+                font-size: 0.9rem;
+                opacity: 0.9;
+            }
+
+            .filters-card {
+                background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+                border: none;
+                border-radius: 15px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+            }
+
+            .filter-label {
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 8px;
+            }
+
+            .report-card {
+                background: linear-gradient(145deg, #ffffff, #f8f9fa);
+                border: none;
+                border-radius: 15px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                overflow: hidden;
+            }
+
+            .report-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            }
+
+            .report-header {
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                padding: 15px 20px;
+                margin: -1px -1px 15px -1px;
+                border-radius: 15px 15px 0 0;
+            }
+
+            .chart-container {
+                position: relative;
+                height: 400px;
+                padding: 20px;
+                background: white;
+                border-radius: 10px;
+                box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+            }
+
+            .report-summary {
+                background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+                border-radius: 15px;
+                padding: 20px;
+                height: 100%;
+            }
+
+            .summary-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid #dee2e6;
+                transition: all 0.3s ease;
+            }
+
+            .summary-item:last-child {
+                border-bottom: none;
+            }
+
+            .summary-item:hover {
+                background: rgba(102, 126, 234, 0.05);
+                border-radius: 8px;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .summary-label {
+                font-weight: 500;
+                color: #495057;
+                display: flex;
+                align-items: center;
+            }
+
+            .summary-label i {
+                margin-right: 8px;
+                width: 16px;
+                text-align: center;
+            }
+
+            .summary-value {
+                font-weight: 700;
+                font-size: 1.1rem;
+            }
+
+            .report-type-card {
+                background: linear-gradient(145deg, #ffffff, #f8f9fa);
+                border: 2px solid transparent;
+                border-radius: 15px;
+                padding: 20px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin-bottom: 15px;
+            }
+
+            .report-type-card:hover {
+                border-color: #667eea;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+            }
+
+            .report-type-card.active {
+                border-color: #667eea;
+                background: linear-gradient(145deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            }
+
+            .report-type-icon {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+                margin: 0 auto 15px;
+            }
+
+            .trend-indicator {
+                display: inline-flex;
+                align-items: center;
+                padding: 4px 8px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                margin-left: 8px;
+            }
+
+            .trend-up {
+                background-color: #d4edda;
+                color: #155724;
+            }
+
+            .trend-down {
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+
+            .trend-stable {
+                background-color: #d1ecf1;
+                color: #0c5460;
+            }
+
+            .metric-card {
+                background: white;
+                border-radius: 10px;
+                padding: 20px;
+                text-align: center;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                margin-bottom: 15px;
+                transition: all 0.3s ease;
+            }
+
+            .metric-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            }
+
+            .metric-value {
+                font-size: 2rem;
+                font-weight: 700;
+                margin: 10px 0;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .metric-label {
+                color: #6c757d;
+                font-weight: 500;
+            }
+
+            .chart-legend {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-top: 15px;
+                gap: 15px;
+            }
+
+            .legend-item {
+                display: flex;
+                align-items: center;
+                padding: 5px 10px;
+                border-radius: 20px;
+                background: rgba(0, 0, 0, 0.05);
+                font-size: 0.9rem;
+            }
+
+            .legend-color {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                margin-right: 8px;
+            }
+
+            .export-section {
+                background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+                border-radius: 15px;
+                padding: 20px;
+                margin-top: 20px;
+            }
+
+            .export-btn {
+                margin-right: 10px;
+                margin-bottom: 10px;
+                border-radius: 25px;
+                padding: 8px 20px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
+
+            .export-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+                color: #6c757d;
+            }
+
+            .empty-state i {
+                font-size: 4rem;
+                margin-bottom: 20px;
+                opacity: 0.5;
+            }
+
+            .insights-panel {
+                background: linear-gradient(145deg, #fff3cd, #ffeaa7);
+                border-radius: 15px;
+                padding: 20px;
+                margin-bottom: 20px;
+                border-left: 5px solid #ffc107;
+            }
+
+            .insight-item {
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: 15px;
+                padding: 10px;
+                background: rgba(255, 255, 255, 0.5);
+                border-radius: 8px;
+            }
+
+            .insight-item:last-child {
+                margin-bottom: 0;
+            }
+
+            .insight-icon {
+                margin-right: 12px;
+                margin-top: 2px;
+                color: #856404;
+            }
+
+            .insight-text {
+                color: #856404;
+                font-weight: 500;
+                line-height: 1.4;
+            }
+
+            .loading-skeleton {
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                background-size: 200% 100%;
+                animation: loading 1.5s infinite;
+                border-radius: 8px;
+                height: 20px;
+                margin-bottom: 10px;
+            }
+
+            @keyframes loading {
+                0% {
+                    background-position: 200% 0;
+                }
+
+                100% {
+                    background-position: -200% 0;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .page-header {
+                    padding: 20px;
+                    text-align: center;
+                }
+
+                .quick-stats .stat-item {
+                    margin-bottom: 15px;
+                }
+
+                .chart-container {
+                    height: 300px;
+                    padding: 10px;
+                }
+
+                .report-summary {
+                    margin-top: 20px;
+                }
+
+                .metric-card {
+                    margin-bottom: 10px;
+                }
+            }
+
+            /* Animation classes */
+            .fade-in {
+                animation: fadeIn 0.5s ease-in;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .slide-in-left {
+                animation: slideInLeft 0.5s ease-out;
+            }
+
+            @keyframes slideInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-30px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .slide-in-right {
+                animation: slideInRight 0.5s ease-out;
+            }
+
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(30px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .pulse-glow {
+                animation: pulseGlow 2s infinite;
+            }
+
+            @keyframes pulseGlow {
+                0% {
+                    box-shadow: 0 0 5px rgba(102, 126, 234, 0.5);
+                }
+
+                50% {
+                    box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
+                }
+
+                100% {
+                    box-shadow: 0 0 5px rgba(102, 126, 234, 0.5);
+                }
+            }
+        </style>
     </head>
     <body>
         <!-- Navigation -->
@@ -588,6 +1016,731 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="/app.js"></script>
 
+        <script>
+            // Enhanced reports-specific functionality
+            document.addEventListener('DOMContentLoaded', function () {
+                let currentChart = null;
+                let currentReportType = 'category';
+                let reportData = {};
+
+                // Initialize report type selection
+                function initializeReportTypes() {
+                    const reportTypeCards = document.querySelectorAll('.report-type-card');
+                    reportTypeCards.forEach(card => {
+                        card.addEventListener('click', function () {
+                            // Remove active class from all cards
+                            reportTypeCards.forEach(c => c.classList.remove('active'));
+                            // Add active class to clicked card
+                            this.classList.add('active');
+                            currentReportType = this.getAttribute('data-type');
+                            updateReportTitle();
+                        });
+                    });
+
+                    // Set default selection
+                    document.querySelector('[data-type="category"]').classList.add('active');
+                }
+
+                // Update report title based on type and period
+                function updateReportTitle() {
+                    const reportType = currentReportType;
+                    const period = document.getElementById('report-period').value;
+                    const titles = {
+                        'category': '📊 Spending by Category',
+                        'time': '📈 Spending Trends Over Time',
+                        'budget': '🎯 Budget Performance Analysis'
+                    };
+                    const periodTexts = {
+                        'this-month': 'This Month',
+                        'last-month': 'Last Month',
+                        'last-3-months': 'Last 3 Months',
+                        'this-year': 'This Year',
+                        'last-year': 'Last Year',
+                        'custom': 'Custom Period'
+                    };
+
+                    const title = `${titles[reportType]} - ${periodTexts[period]}`;
+                    document.getElementById('report-title').innerHTML = `<i class="fas fa-chart-bar me-2"></i>${title}`;
+                }
+
+                // Show/hide custom date range
+                document.getElementById('report-period').addEventListener('change', function () {
+                    const customDateRange = document.getElementById('report-custom-date-range');
+                    if (this.value === 'custom') {
+                        customDateRange.classList.remove('d-none');
+                    } else {
+                        customDateRange.classList.add('d-none');
+                    }
+                    updateReportTitle();
+                });
+
+                // Generate report
+                document.getElementById('generate-report').addEventListener('click', generateReport);
+
+                function generateReport() {
+                    showLoading();
+
+                    // Simulate API call
+                    setTimeout(() => {
+                        const data = generateMockData();
+                        renderReport(data);
+                        generateInsights(data);
+                        hideLoading();
+                    }, 1500);
+                }
+
+                function showLoading() {
+                    document.getElementById('chart-loading').classList.remove('d-none');
+                    document.getElementById('summary-loading').classList.remove('d-none');
+                    document.getElementById('chart-empty-state').classList.add('d-none');
+                    if (currentChart) {
+                        currentChart.destroy();
+                    }
+                }
+
+                function hideLoading() {
+                    document.getElementById('chart-loading').classList.add('d-none');
+                    document.getElementById('summary-loading').classList.add('d-none');
+                }
+
+                // Generate mock data for demonstration
+                function generateMockData() {
+                    const reportType = currentReportType;
+
+                    if (reportType === 'category') {
+                        return {
+                            labels: ['Food & Dining', 'Transportation', 'Shopping', 'Entertainment', 'Utilities', 'Healthcare'],
+                            data: [1250, 680, 450, 320, 280, 180],
+                            colors: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff', '#ff9f40'],
+                            total: 3160
+                        };
+                    } else if (reportType === 'time') {
+                        return {
+                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                            data: [2800, 3200, 2900, 3400, 3100, 3350],
+                            colors: ['#667eea'],
+                            total: 18750
+                        };
+                    } else if (reportType === 'budget') {
+                        return {
+                            labels: ['Food Budget', 'Transport Budget', 'Entertainment Budget'],
+                            budgeted: [1500, 800, 400],
+                            actual: [1250, 920, 380],
+                            colors: ['#28a745', '#dc3545'],
+                            total: 2700
+                        };
+                    }
+                }
+
+                // Render report based on type
+                function renderReport(data) {
+                    const canvas = document.getElementById('report-chart');
+                    const ctx = canvas.getContext('2d');
+
+                    if (currentChart) {
+                        currentChart.destroy();
+                    }
+
+                    if (currentReportType === 'category') {
+                        renderCategoryChart(ctx, data);
+                    } else if (currentReportType === 'time') {
+                        renderTimeChart(ctx, data);
+                    } else if (currentReportType === 'budget') {
+                        renderBudgetChart(ctx, data);
+                    }
+
+                    updateSummary(data);
+                    updateQuickStats(data);
+                    updateKeyMetrics(data);
+                }
+
+                function renderCategoryChart(ctx, data) {
+                    currentChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                data: data.data,
+                                backgroundColor: data.colors,
+                                borderWidth: 2,
+                                borderColor: '#fff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 20,
+                                        usePointStyle: true
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            const percentage = ((context.parsed / data.total) * 100).toFixed(1);
+                                            return `${context.label}: ${formatCurrency(context.parsed)} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            },
+                            animation: {
+                                animateRotate: true,
+                                duration: 1000
+                            }
+                        }
+                    });
+                }
+
+                function renderTimeChart(ctx, data) {
+                    currentChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Monthly Spending',
+                                data: data.data,
+                                borderColor: '#667eea',
+                                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4,
+                                pointBackgroundColor: '#667eea',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                pointRadius: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            return `${context.label}: ${formatCurrency(context.parsed.y)}`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function (value) {
+                                            return formatCurrency(value);
+                                        }
+                                    }
+                                }
+                            },
+                            animation: {
+                                duration: 2000,
+                                easing: 'easeInOutQuart'
+                            }
+                        }
+                    });
+                }
+
+                function renderBudgetChart(ctx, data) {
+                    currentChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.labels,
+                            datasets: [
+                                {
+                                    label: 'Budgeted',
+                                    data: data.budgeted,
+                                    backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                                    borderColor: '#28a745',
+                                    borderWidth: 2
+                                },
+                                {
+                                    label: 'Actual',
+                                    data: data.actual,
+                                    backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                                    borderColor: '#dc3545',
+                                    borderWidth: 2
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'top'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            return `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function (value) {
+                                            return formatCurrency(value);
+                                        }
+                                    }
+                                }
+                            },
+                            animation: {
+                                duration: 1500,
+                                easing: 'easeInOutQuart'
+                            }
+                        }
+                    });
+                }
+
+                // Update summary panel
+                function updateSummary(data) {
+                    const summaryContainer = document.getElementById('report-summary');
+                    let summaryHTML = '';
+
+                    if (currentReportType === 'category') {
+                        summaryHTML = `
+                            <div class="summary-item">
+                                <span class="summary-label">
+                                    <i class="fas fa-dollar-sign text-success"></i>Total Spending
+                                </span>
+                                <span class="summary-value text-primary">${formatCurrency(data.total)}</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">
+                                    <i class="fas fa-crown text-warning"></i>Top Category
+                                </span>
+                                <span class="summary-value">${data.labels[0]}</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">
+                                    <i class="fas fa-chart-pie text-info"></i>Categories
+                                </span>
+                                <span class="summary-value">${data.labels.length}</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">
+                                    <i class="fas fa-calculator text-secondary"></i>Average per Category
+                                </span>
+                                <span class="summary-value">${formatCurrency(data.total / data.labels.length)}</span>
+                            </div>
+                        `;
+                    } else if (currentReportType === 'time') {
+                        const avgMonthly = data.total / data.labels.length;
+                        const trend = data.data[data.data.length - 1] > data.data[0] ? 'increasing' : 'decreasing';
+                        summaryHTML = `
+                            <div class="summary-item">
+                                <span class="summary-label">
+                                    <i class="fas fa-dollar-sign text-success"></i>Total Period
+                                </span>
+                                <span class="summary-value text-primary">${formatCurrency(data.total)}</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">
+                                    <i class="fas fa-chart-line text-info"></i>Monthly Average
+                                </span>
+                                <span class="summary-value">${formatCurrency(avgMonthly)}</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">
+                                    <i class="fas fa-trending-up text-warning"></i>Trend
+                                </span>
+                                <span class="summary-value ${trend === 'increasing' ? 'text-danger' : 'text-success'}">${trend.charAt(0).toUpperCase() + trend.slice(1)}</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">
+                                    <i class="fas fa-calendar text-secondary"></i>Period Length
+                                </span>
+                                <span class="summary-value">${data.labels.length} months</span>
+                            </div>
+                        `;
+                    } else if (currentReportType === 'budget') {
+                        const totalBudgeted = data.budgeted.reduce((a, b) => a + b, 0);
+                        const totalActual = data.actual.reduce((a, b) => a + b, 0);
+                        const variance = totalActual - totalBudgeted;
+                        summaryHTML = `
+                            <div class="summary-item">
+                                <span class="summary-label">
+                                    <i class="fas fa-bullseye text-primary"></i>Total Budgeted
+                                </span>
+                                <span class="summary-value text-primary">${formatCurrency(totalBudgeted)}</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">
+                                    <i class="fas fa-shopping-cart text-danger"></i>Total Actual
+                                </span>
+                                <span class="summary-value text-danger">${formatCurrency(totalActual)}</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">
+                                    <i class="fas fa-balance-scale text-warning"></i>Variance
+                                </span>
+                                <span class="summary-value ${variance > 0 ? 'text-danger' : 'text-success'}">${formatCurrency(Math.abs(variance))} ${variance > 0 ? 'Over' : 'Under'}</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">
+                                    <i class="fas fa-percentage text-info"></i>Performance
+                                </span>
+                                <span class="summary-value">${((totalActual / totalBudgeted) * 100).toFixed(1)}%</span>
+                            </div>
+                        `;
+                    }
+
+                    summaryContainer.innerHTML = summaryHTML;
+                }
+
+                // Update quick stats
+                function updateQuickStats(data) {
+                    if (currentReportType === 'category') {
+                        animateValue(document.getElementById('total-period-expenses'), 0, data.total, 1000, true);
+                        animateValue(document.getElementById('avg-daily-spending'), 0, data.total / 30, 1200, true);
+                        animateValue(document.getElementById('top-category-amount'), 0, data.data[0], 800, true);
+
+                        const trendElement = document.getElementById('trend-percentage');
+                        const trendIndicator = document.getElementById('trend-indicator');
+                        trendElement.textContent = '0%';
+                        trendIndicator.innerHTML = '<i class="fas fa-minus me-1"></i>Stable';
+                        trendIndicator.className = 'trend-indicator trend-stable';
+                    }
+                }
+
+                // Update key metrics
+                function updateKeyMetrics(data) {
+                    const metricsContainer = document.getElementById('metrics-container');
+                    let metricsHTML = '';
+
+                    if (currentReportType === 'category') {
+                        const topSpending = Math.max(...data.data);
+                        const avgSpending = data.total / data.labels.length;
+                        const efficiency = ((avgSpending / topSpending) * 100).toFixed(1);
+
+                        metricsHTML = `
+                            <div class="metric-card">
+                                <div class="metric-value">${data.labels.length}</div>
+                                <div class="metric-label">Active Categories</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${efficiency}%</div>
+                                <div class="metric-label">Spending Balance</div>
+                            </div>
+                        `;
+                    } else if (currentReportType === 'time') {
+                        const maxSpending = Math.max(...data.data);
+                        const minSpending = Math.min(...data.data);
+                        const volatility = (((maxSpending - minSpending) / minSpending) * 100).toFixed(1);
+
+                        metricsHTML = `
+                            <div class="metric-card">
+                                <div class="metric-value">${formatCurrency(maxSpending)}</div>
+                                <div class="metric-label">Peak Month</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${volatility}%</div>
+                                <div class="metric-label">Volatility</div>
+                            </div>
+                        `;
+                    } else if (currentReportType === 'budget') {
+                        const onTrack = data.actual.filter((actual, i) => actual <= data.budgeted[i]).length;
+                        const accuracy = ((onTrack / data.labels.length) * 100).toFixed(0);
+
+                        metricsHTML = `
+                            <div class="metric-card">
+                                <div class="metric-value">${onTrack}/${data.labels.length}</div>
+                                <div class="metric-label">On Track</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${accuracy}%</div>
+                                <div class="metric-label">Accuracy</div>
+                            </div>
+                        `;
+                    }
+
+                    metricsContainer.innerHTML = metricsHTML;
+                }
+
+                // Generate AI insights
+                function generateInsights(data) {
+                    const insightsContainer = document.getElementById('insights-container');
+                    const insightsSection = document.getElementById('insights-section');
+                    let insights = [];
+
+                    if (currentReportType === 'category') {
+                        insights = [
+                            {
+                                icon: 'fas fa-exclamation-circle',
+                                text: `Your top spending category is "${data.labels[0]}" at ${formatCurrency(data.data[0])}, representing ${((data.data[0] / data.total) * 100).toFixed(1)}% of total expenses.`
+                            },
+                            {
+                                icon: 'fas fa-lightbulb',
+                                text: `Consider setting a budget for "${data.labels[0]}" to better control your largest expense category.`
+                            },
+                            {
+                                icon: 'fas fa-chart-pie',
+                                text: `Your expenses are distributed across ${data.labels.length} categories with an average of ${formatCurrency(data.total / data.labels.length)} per category.`
+                            }
+                        ];
+                    } else if (currentReportType === 'time') {
+                        const trend = data.data[data.data.length - 1] > data.data[0] ? 'increasing' : 'decreasing';
+                        insights = [
+                            {
+                                icon: 'fas fa-trending-up',
+                                text: `Your spending trend is ${trend} over the selected period.`
+                            },
+                            {
+                                icon: 'fas fa-calculator',
+                                text: `Your average monthly spending is ${formatCurrency(data.total / data.labels.length)}.`
+                            },
+                            {
+                                icon: 'fas fa-target',
+                                text: `${trend === 'increasing' ? 'Consider reviewing your recent purchases to identify areas for improvement.' : 'Great job on reducing your spending! Keep up the good work.'}`
+                            }
+                        ];
+                    } else if (currentReportType === 'budget') {
+                        const totalBudgeted = data.budgeted.reduce((a, b) => a + b, 0);
+                        const totalActual = data.actual.reduce((a, b) => a + b, 0);
+                        const overBudget = data.actual.filter((actual, i) => actual > data.budgeted[i]).length;
+
+                        insights = [
+                            {
+                                icon: 'fas fa-balance-scale',
+                                text: `You're ${totalActual > totalBudgeted ? 'over' : 'under'} budget by ${formatCurrency(Math.abs(totalActual - totalBudgeted))}.`
+                            },
+                            {
+                                icon: 'fas fa-chart-bar',
+                                text: `${data.labels.length - overBudget} out of ${data.labels.length} budgets are on track.`
+                            },
+                            {
+                                icon: 'fas fa-trophy',
+                                text: overBudget === 0 ? 'Excellent! All your budgets are on track.' : `Focus on the ${overBudget} budget${overBudget > 1 ? 's' : ''} that exceeded limits.`
+                            }
+                        ];
+                    }
+
+                    let insightsHTML = '';
+                    insights.forEach(insight => {
+                        insightsHTML += `
+                            <div class="insight-item">
+                                <i class="${insight.icon} insight-icon"></i>
+                                <div class="insight-text">${insight.text}</div>
+                            </div>
+                        `;
+                    });
+
+                    insightsContainer.innerHTML = insightsHTML;
+                    insightsSection.classList.remove('d-none');
+                }
+
+                // Export functionality
+                window.exportReport = function (format) {
+                    showToast(`Exporting report as ${format.toUpperCase()}...`, 'info');
+
+                    if (format === 'png' && currentChart) {
+                        const url = currentChart.toBase64Image();
+                        const link = document.createElement('a');
+                        link.download = `report-${currentReportType}-${Date.now()}.png`;
+                        link.href = url;
+                        link.click();
+                        showToast('Chart exported successfully!', 'success');
+                    } else {
+                        // Simulate export for other formats
+                        setTimeout(() => {
+                            showToast(`Report exported as ${format.toUpperCase()} successfully!`, 'success');
+                        }, 1000);
+                    }
+                };
+
+                window.shareReport = function () {
+                    if (navigator.share) {
+                        navigator.share({
+                            title: 'Financial Report',
+                            text: 'Check out my financial report from Expense Tracker',
+                            url: window.location.href
+                        });
+                    } else {
+                        // Fallback: copy link to clipboard
+                        navigator.clipboard.writeText(window.location.href).then(() => {
+                            showToast('Report link copied to clipboard!', 'success');
+                        });
+                    }
+                };
+
+                // Fullscreen chart functionality
+                document.getElementById('fullscreen-chart').addEventListener('click', function () {
+                    if (currentChart) {
+                        const modal = new bootstrap.Modal(document.getElementById('fullscreenChartModal'));
+                        modal.show();
+
+                        // Clone chart to fullscreen modal
+                        modal._element.addEventListener('shown.bs.modal', function () {
+                            const fullscreenCanvas = document.getElementById('fullscreen-chart');
+                            const fullscreenCtx = fullscreenCanvas.getContext('2d');
+
+                            new Chart(fullscreenCtx, {
+                                type: currentChart.config.type,
+                                data: currentChart.config.data,
+                                options: {
+                                    ...currentChart.config.options,
+                                    maintainAspectRatio: false
+                                }
+                            });
+                        });
+                    }
+                });
+
+                // Download chart functionality
+                document.getElementById('download-chart').addEventListener('click', function () {
+                    if (currentChart) {
+                        exportReport('png');
+                    }
+                });
+
+                // Refresh reports
+                document.getElementById('refresh-reports').addEventListener('click', function () {
+                    this.innerHTML = '<i class="fas fa-sync-alt fa-spin me-2"></i>Refreshing...';
+
+                    setTimeout(() => {
+                        generateReport();
+                        this.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Refresh Data';
+                        showToast('Reports refreshed successfully!', 'success');
+                    }, 1000);
+                });
+
+                // Utility functions
+                function animateValue(element, start, end, duration, isCurrency = false) {
+                    let startTimestamp = null;
+                    const step = (timestamp) => {
+                        if (!startTimestamp) startTimestamp = timestamp;
+                        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                        const current = progress * (end - start) + start;
+
+                        if (isCurrency) {
+                            const symbol = element.querySelector('.currency-symbol');
+                            if (symbol) {
+                                element.innerHTML = symbol.outerHTML + current.toFixed(2);
+                            } else {
+                                element.textContent = formatCurrency(current);
+                            }
+                        } else {
+                            element.textContent = Math.floor(current);
+                        }
+
+                        if (progress < 1) {
+                            window.requestAnimationFrame(step);
+                        }
+                    };
+                    window.requestAnimationFrame(step);
+                }
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', function (e) {
+                    // Ctrl/Cmd + G = Generate Report
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'g') {
+                        e.preventDefault();
+                        generateReport();
+                    }
+
+                    // Ctrl/Cmd + F = Fullscreen chart
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'f' && currentChart) {
+                        e.preventDefault();
+                        document.getElementById('fullscreen-chart').click();
+                    }
+
+                    // Ctrl/Cmd + S = Export report
+                    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                        e.preventDefault();
+                        exportReport('pdf');
+                    }
+                });
+
+                // Auto-refresh reports every 5 minutes
+                setInterval(() => {
+                    if (currentChart) {
+                        generateReport();
+                    }
+                }, 300000);
+
+                // Initialize everything
+                initializeReportTypes();
+                updateReportTitle();
+
+                // Intersection Observer for animations
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                // Apply animation observer to cards
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.6s ease-out';
+                    observer.observe(card);
+                });
+
+                // Initialize tooltips
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            });
+
+            // Enhanced error handling
+            window.addEventListener('error', function (e) {
+                console.error('Reports page error:', e.error);
+                showToast('An unexpected error occurred. Please refresh the page.', 'error');
+            });
+
+            // Global utilities for reports
+            window.formatCurrency = function (amount) {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD'
+                }).format(amount);
+            };
+
+            window.showToast = function (message, type = 'info', duration = 3000) {
+                // Create toast element
+                const toast = document.createElement('div');
+                toast.className = `toast align-items-center text-white bg-${type === 'error' ? 'danger' : type} border-0`;
+                toast.setAttribute('role', 'alert');
+                toast.innerHTML = `
+                    <div class="d-flex">
+                        <div class="toast-body">${message}</div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                `;
+
+                // Add to page
+                let toastContainer = document.querySelector('.toast-container');
+                if (!toastContainer) {
+                    toastContainer = document.createElement('div');
+                    toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                    document.body.appendChild(toastContainer);
+                }
+                toastContainer.appendChild(toast);
+
+                // Show toast
+                const bsToast = new bootstrap.Toast(toast, { delay: duration });
+                bsToast.show();
+
+                // Remove after hide
+                toast.addEventListener('hidden.bs.toast', () => {
+                    toast.remove();
+                });
+            };
+        </script>
     </body>
 </html>
 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
