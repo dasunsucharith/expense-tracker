@@ -1,359 +1,1707 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expense Tracker</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/styles.css">
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/dashboard">
-            <i class="fas fa-wallet me-2"></i>
-            Expense Tracker
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" data-page="dashboard" href="/dashboard">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" data-page="expenses" href="/expenses">Expenses</a></li>
-                <li class="nav-item"><a class="nav-link" data-page="incomes" href="/incomes">Incomes</a></li>
-                <li class="nav-item"><a class="nav-link" data-page="savings" href="/savings">Savings</a></li>
-                <li class="nav-item"><a class="nav-link" data-page="budgets" href="/budgets">Budgets</a></li>
-                <li class="nav-item"><a class="nav-link" data-page="reports" href="/reports">Reports</a></li>
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle me-1"></i>
-                        <span id="username-display">User</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                        <li><a class="dropdown-item" href="#" id="logout-link">Logout</a></li>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Budgets - Expense Tracker</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link rel="stylesheet" href="/styles.css">
+        <style>
+            /* Additional budgets-specific styles */
+            .page-header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-radius: 20px;
+                padding: 30px;
+                margin-bottom: 30px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .page-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                transform: rotate(45deg);
+            }
+
+            .quick-stats {
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: white;
+                border-radius: 15px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .quick-stats .stat-item {
+                text-align: center;
+                padding: 10px;
+            }
+
+            .quick-stats .stat-value {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 5px;
+            }
+
+            .quick-stats .stat-label {
+                font-size: 0.9rem;
+                opacity: 0.9;
+            }
+
+            .budget-card {
+                background: linear-gradient(145deg, #ffffff, #f8f9fa);
+                border: none;
+                border-radius: 15px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                margin-bottom: 20px;
+                overflow: hidden;
+            }
+
+            .budget-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            }
+
+            .budget-header {
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                padding: 15px 20px;
+                margin: -1px -1px 15px -1px;
+                border-radius: 15px 15px 0 0;
+            }
+
+            .budget-progress {
+                position: relative;
+                background-color: #e9ecef;
+                border-radius: 10px;
+                overflow: hidden;
+                height: 12px;
+                margin: 10px 0;
+            }
+
+            .budget-progress-bar {
+                height: 100%;
+                border-radius: 10px;
+                transition: width 0.8s ease-in-out;
+                position: relative;
+                background: linear-gradient(90deg, #28a745, #20c997);
+            }
+
+            .budget-progress-bar.warning {
+                background: linear-gradient(90deg, #ffc107, #ffcd39);
+            }
+
+            .budget-progress-bar.danger {
+                background: linear-gradient(90deg, #dc3545, #e55353);
+            }
+
+            .budget-progress-bar::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+                animation: shimmer 2s infinite;
+            }
+
+            @keyframes shimmer {
+                0% {
+                    transform: translateX(-100%);
+                }
+
+                100% {
+                    transform: translateX(100%);
+                }
+            }
+
+            .budget-status-badge {
+                padding: 4px 12px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .status-on-track {
+                background-color: #d4edda;
+                color: #155724;
+                border: 1px solid #c3e6cb;
+            }
+
+            .status-warning {
+                background-color: #fff3cd;
+                color: #856404;
+                border: 1px solid #ffeaa7;
+            }
+
+            .status-over-budget {
+                background-color: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+            }
+
+            .budget-amount {
+                font-size: 1.4rem;
+                font-weight: 700;
+                margin: 10px 0;
+            }
+
+            .budget-table-card {
+                border-radius: 15px;
+                overflow: hidden;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            }
+
+            .table th {
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                font-weight: 600;
+                border: none;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-size: 0.85rem;
+            }
+
+            .table tbody tr {
+                transition: all 0.3s ease;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .table tbody tr:hover {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .category-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 4px 8px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: white;
+            }
+
+            .category-badge::before {
+                content: '';
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                margin-right: 6px;
+                background-color: currentColor;
+            }
+
+            .action-btn {
+                border-radius: 50%;
+                width: 35px;
+                height: 35px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            }
+
+            .action-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .filters-card {
+                background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+                border: none;
+                border-radius: 15px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            }
+
+            .filter-label {
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 8px;
+            }
+
+            .budget-detail-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .budget-detail-item:last-child {
+                border-bottom: none;
+            }
+
+            .budget-detail-label {
+                font-weight: 500;
+                color: #6c757d;
+            }
+
+            .budget-detail-value {
+                font-weight: 600;
+                color: #495057;
+            }
+
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+                color: #6c757d;
+            }
+
+            .empty-state i {
+                font-size: 4rem;
+                margin-bottom: 20px;
+                opacity: 0.5;
+            }
+
+            .mini-chart {
+                width: 60px;
+                height: 60px;
+                margin: 0 auto;
+            }
+
+            .budget-period-badge {
+                background-color: #e9ecef;
+                color: #495057;
+                padding: 4px 8px;
+                border-radius: 8px;
+                font-size: 0.8rem;
+                font-weight: 500;
+            }
+
+            .budget-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2rem;
+                margin-right: 15px;
+            }
+
+            .budget-icon.success {
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: white;
+            }
+
+            .budget-icon.warning {
+                background: linear-gradient(135deg, #ffc107, #ffcd39);
+                color: white;
+            }
+
+            .budget-icon.danger {
+                background: linear-gradient(135deg, #dc3545, #e55353);
+                color: white;
+            }
+
+            @media (max-width: 768px) {
+                .page-header {
+                    padding: 20px;
+                    text-align: center;
+                }
+
+                .quick-stats .stat-item {
+                    margin-bottom: 15px;
+                }
+
+                .budget-card {
+                    margin-bottom: 15px;
+                }
+
+                .table-responsive {
+                    border-radius: 10px;
+                }
+            }
+
+            /* Animation classes */
+            .fade-in {
+                animation: fadeIn 0.5s ease-in;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .pulse {
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+
+                50% {
+                    transform: scale(1.05);
+                }
+
+                100% {
+                    transform: scale(1);
+                }
+            }
+
+            .budget-notification {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #dc3545, #e55353);
+                animation: pulse 2s infinite;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/dashboard">
+                    <i class="fas fa-wallet me-2"></i>
+                    Expense Tracker
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/dashboard">
+                                <i class="fas fa-home me-1"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/expenses">
+                                <i class="fas fa-receipt me-1"></i>Expenses
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/incomes">
+                                <i class="fas fa-money-bill-wave me-1"></i>Incomes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/savings">
+                                <i class="fas fa-piggy-bank me-1"></i>Savings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/budgets">
+                                <i class="fas fa-calculator me-1"></i>Budgets
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/reports">
+                                <i class="fas fa-chart-bar me-1"></i>Reports
+                            </a>
+                        </li>
                     </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-<div class="container-fluid mt-4">
-                    <div id="budgets-page" class="page-container">
-                        <div class="row mb-4">
-                            <div class="col-md-8">
-                                <h2>Budgets</h2>
-                                <p class="text-muted">Manage your budgets</p>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>
+                                <span id="username-display">User</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/profile"><i class="fas fa-cog me-2"></i>Profile</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#" id="logout-link"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container-fluid mt-4" id="budgets-page">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2><i class="fas fa-calculator me-2"></i>Budget Management</h2>
+                        <p class="mb-0">Plan, track, and control your spending with smart budgets</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-light btn-lg" data-bs-toggle="modal" data-bs-target="#addBudgetModal">
+                            <i class="fas fa-plus me-2"></i>Create Budget
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="quick-stats fade-in">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-item">
+                            <div class="stat-value" id="total-budgets-display">0</div>
+                            <div class="stat-label">
+                                <i class="fas fa-list me-1"></i>Active Budgets
                             </div>
-                            <div class="col-md-4 text-end">
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-item">
+                            <div class="stat-value" id="total-budget-amount-display">
+                                <span class="currency-symbol">$</span>0.00
+                            </div>
+                            <div class="stat-label">
+                                <i class="fas fa-chart-pie me-1"></i>Total Budgeted
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-item">
+                            <div class="stat-value" id="total-spent-display">
+                                <span class="currency-symbol">$</span>0.00
+                            </div>
+                            <div class="stat-label">
+                                <i class="fas fa-shopping-cart me-1"></i>Total Spent
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-item">
+                            <div class="stat-value" id="budgets-on-track-display">0</div>
+                            <div class="stat-label">
+                                <i class="fas fa-check-circle me-1"></i>On Track
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card filters-card">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-filter me-2 text-primary"></i>Filter Budgets
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <label for="budget-status-filter" class="form-label filter-label">
+                                        <i class="fas fa-chart-line me-1"></i>Status
+                                    </label>
+                                    <select class="form-select" id="budget-status-filter">
+                                        <option value="">📊 All Statuses</option>
+                                        <option value="on-track">✅ On Track</option>
+                                        <option value="warning">⚠️ Warning</option>
+                                        <option value="over-budget">🚨 Over Budget</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <label for="budget-category-filter" class="form-label filter-label">
+                                        <i class="fas fa-tags me-1"></i>Category
+                                    </label>
+                                    <select class="form-select" id="budget-category-filter">
+                                        <option value="">🏷️ All Categories</option>
+                                        <!-- Categories will be loaded here -->
+                                    </select>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <label for="budget-period-filter" class="form-label filter-label">
+                                        <i class="fas fa-calendar me-1"></i>Period
+                                    </label>
+                                    <select class="form-select" id="budget-period-filter">
+                                        <option value="">📅 All Periods</option>
+                                        <option value="monthly">📅 Monthly</option>
+                                        <option value="quarterly">📊 Quarterly</option>
+                                        <option value="yearly">🗓️ Yearly</option>
+                                        <option value="custom">⚙️ Custom</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3 d-flex align-items-end">
+                                    <button class="btn btn-primary w-100" id="apply-budget-filters">
+                                        <i class="fas fa-search me-2"></i>Apply Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Budgets Cards -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card budget-table-card">
+                        <div class="card-header bg-transparent border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-fire me-2 text-primary"></i>Active Budgets
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="exportBudgets('csv')">
+                                        <i class="fas fa-download me-1"></i>Export CSV
+                                    </button>
+                                    <button class="btn btn-outline-success btn-sm" onclick="exportBudgets('excel')">
+                                        <i class="fas fa-file-excel me-1"></i>Export Excel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="active-budgets-container" class="row">
+                                <!-- Active budget cards will be loaded here -->
+                            </div>
+                            <!-- Empty State for Active Budgets -->
+                            <div id="active-budgets-empty" class="empty-state d-none">
+                                <i class="fas fa-calculator"></i>
+                                <h4>No Active Budgets</h4>
+                                <p>You don't have any active budgets yet.<br>Create your first budget to start tracking your spending!</p>
                                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBudgetModal">
-                                    <i class="fas fa-plus me-1"></i> Add Budget
+                                    <i class="fas fa-plus me-2"></i>Create Your First Budget
                                 </button>
                             </div>
                         </div>
-
-                        <!-- Active Budgets -->
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-header bg-light">
-                                        <h5 class="card-title mb-0">Active Budgets</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="active-budgets-container">
-                                            <!-- Active budgets will be loaded here -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- All Budgets -->
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-header bg-light">
-                                        <h5 class="card-title mb-0">All Budgets</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Name</th>
-                                                        <th>Category</th>
-                                                        <th>Period</th>
-                                                        <th>Amount</th>
-                                                        <th>Spent</th>
-                                                        <th>Remaining</th>
-                                                        <th>Status</th>
-                                                        <th>Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="budgets-table">
-                                                    <!-- Budgets will be loaded here -->
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Modals -->
-                    <div id="modals-container">
-            <!-- Add Expense Modal -->
-            <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Add Expense</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="add-expense-form">
-                                <div class="mb-3">
-                                    <label for="expense-amount" class="form-label">Amount</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text currency-symbol"></span>
-                                        <input type="number" class="form-control" id="expense-amount" step="0.01" min="0.01" required>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="expense-category" class="form-label">Category</label>
-                                    <select class="form-select" id="expense-category" required>
-                                        <!-- Categories will be loaded here -->
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="expense-date" class="form-label">Date</label>
-                                    <input type="date" class="form-control" id="expense-date" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="expense-description" class="form-label">Description</label>
-                                    <input type="text" class="form-control" id="expense-description">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="expense-method" class="form-label">Payment Method</label>
-                                    <select class="form-select" id="expense-method">
-                                        <option value="cash">Cash</option>
-                                        <option value="credit">Credit Card</option>
-                                    </select>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary" id="save-expense">Save Expense</button>
-                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Edit Expense Modal -->
-            <div class="modal fade" id="editExpenseModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Edit Expense</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <!-- All Budgets Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card budget-table-card">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-list me-2 text-primary"></i>All Budgets
+                            </h5>
                         </div>
-                        <div class="modal-body">
-                            <form id="edit-expense-form">
-                                <input type="hidden" id="edit-expense-id">
-                                <div class="mb-3">
-                                    <label for="edit-expense-amount" class="form-label">Amount</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text currency-symbol"></span>
-                                        <input type="number" class="form-control" id="edit-expense-amount" step="0.01" min="0.01" required>
-                                    </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th><i class="fas fa-tag me-1"></i>Name</th>
+                                            <th><i class="fas fa-tags me-1"></i>Category</th>
+                                            <th><i class="fas fa-calendar me-1"></i>Period</th>
+                                            <th><i class="fas fa-dollar-sign me-1"></i>Budget</th>
+                                            <th><i class="fas fa-shopping-cart me-1"></i>Spent</th>
+                                            <th><i class="fas fa-money-bill me-1"></i>Remaining</th>
+                                            <th><i class="fas fa-chart-bar me-1"></i>Status</th>
+                                            <th><i class="fas fa-cog me-1"></i>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="budgets-table">
+                                        <!-- Budget rows will be loaded here -->
+                                    </tbody>
+                                </table>
+                                <!-- Empty State -->
+                                <div id="budgets-empty-state" class="empty-state d-none">
+                                    <i class="fas fa-calculator"></i>
+                                    <h4>No Budgets Found</h4>
+                                    <p>You haven't created any budgets yet.<br>Click "Create Budget" to get started!</p>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBudgetModal">
+                                        <i class="fas fa-plus me-2"></i>Create Your First Budget
+                                    </button>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="edit-expense-category" class="form-label">Category</label>
-                                    <select class="form-select" id="edit-expense-category" required>
-                                        <!-- Categories will be loaded here -->
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit-expense-date" class="form-label">Date</label>
-                                    <input type="date" class="form-control" id="edit-expense-date" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit-expense-description" class="form-label">Description</label>
-                                    <input type="text" class="form-control" id="edit-expense-description">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit-expense-method" class="form-label">Payment Method</label>
-                                    <select class="form-select" id="edit-expense-method">
-                                        <option value="cash">Cash</option>
-                                        <option value="credit">Credit Card</option>
-                                    </select>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-danger me-auto" id="delete-expense">Delete</button>
-                            <button type="button" class="btn btn-primary" id="update-expense">Update Expense</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Add Budget Modal -->
-            <div class="modal fade" id="addBudgetModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Add Budget</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="add-budget-form">
-                                <div class="mb-3">
-                                    <label for="budget-name" class="form-label">Budget Name</label>
-                                    <input type="text" class="form-control" id="budget-name" required>
+        <!-- Modals -->
+        <!-- Add Budget Modal -->
+        <div class="modal fade" id="addBudgetModal" tabindex="-1" aria-labelledby="addBudgetModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="addBudgetModalLabel">
+                            <i class="fas fa-plus-circle me-2"></i>Create New Budget
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="add-budget-form">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="budget-name" class="form-label">
+                                        <i class="fas fa-tag me-1 text-primary"></i>Budget Name *
+                                    </label>
+                                    <input type="text" class="form-control" id="budget-name" placeholder="e.g., Monthly Food Budget" required>
+                                    <div class="form-text">Choose a descriptive name for your budget</div>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="budget-amount" class="form-label">Amount</label>
+                                <div class="col-md-6 mb-3">
+                                    <label for="budget-amount" class="form-label">
+                                        <i class="fas fa-dollar-sign me-1 text-success"></i>Amount *
+                                    </label>
                                     <div class="input-group">
-                                        <span class="input-group-text currency-symbol"></span>
-                                        <input type="number" class="form-control" id="budget-amount" step="0.01" min="0.01" required>
+                                        <span class="input-group-text currency-symbol">$</span>
+                                        <input type="number" class="form-control" id="budget-amount" step="0.01" min="0.01" placeholder="0.00" required>
                                     </div>
+                                    <div class="form-text">Set your budget limit</div>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="budget-category" class="form-label">Category (Optional)</label>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="budget-category" class="form-label">
+                                        <i class="fas fa-tags me-1 text-info"></i>Category (Optional)
+                                    </label>
                                     <select class="form-select" id="budget-category">
                                         <option value="">All Categories</option>
                                         <!-- Categories will be loaded here -->
                                     </select>
+                                    <div class="form-text">Link to specific category or leave for all expenses</div>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="budget-period" class="form-label">Period</label>
+                                <div class="col-md-6 mb-3">
+                                    <label for="budget-period" class="form-label">
+                                        <i class="fas fa-calendar-alt me-1 text-warning"></i>Period
+                                    </label>
                                     <select class="form-select" id="budget-period">
-                                        <option value="monthly">Monthly</option>
-                                        <option value="quarterly">Quarterly</option>
-                                        <option value="yearly">Yearly</option>
-                                        <option value="custom">Custom</option>
+                                        <option value="monthly">📅 Monthly</option>
+                                        <option value="quarterly">📊 Quarterly</option>
+                                        <option value="yearly">🗓️ Yearly</option>
+                                        <option value="custom">⚙️ Custom</option>
                                     </select>
+                                    <div class="form-text">How often does this budget reset?</div>
                                 </div>
-                                <div class="row mb-3 d-none" id="budget-custom-dates">
-                                    <div class="col-md-6">
-                                        <label for="budget-start-date" class="form-label">Start Date</label>
-                                        <input type="date" class="form-control" id="budget-start-date">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="budget-end-date" class="form-label">End Date</label>
-                                        <input type="date" class="form-control" id="budget-end-date">
-                                    </div>
+                            </div>
+                            <div class="row mb-3 d-none" id="budget-custom-dates">
+                                <div class="col-md-6">
+                                    <label for="budget-start-date" class="form-label">
+                                        <i class="fas fa-play me-1"></i>Start Date
+                                    </label>
+                                    <input type="date" class="form-control" id="budget-start-date">
                                 </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary" id="save-budget">Save Budget</button>
-                        </div>
+                                <div class="col-md-6">
+                                    <label for="budget-end-date" class="form-label">
+                                        <i class="fas fa-stop me-1"></i>End Date
+                                    </label>
+                                    <input type="date" class="form-control" id="budget-end-date">
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                </div>
-            </div>
-
-            <!-- Edit Budget Modal -->
-            <div class="modal fade" id="editBudgetModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Edit Budget</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="edit-budget-form">
-                                <input type="hidden" id="edit-budget-id">
-                                <div class="mb-3">
-                                    <label for="edit-budget-name" class="form-label">Budget Name</label>
-                                    <input type="text" class="form-control" id="edit-budget-name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit-budget-amount" class="form-label">Amount</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text currency-symbol"></span>
-                                        <input type="number" class="form-control" id="edit-budget-amount" step="0.01" min="0.01" required>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit-budget-category" class="form-label">Category (Optional)</label>
-                                    <select class="form-select" id="edit-budget-category">
-                                        <option value="">All Categories</option>
-                                        <!-- Categories will be loaded here -->
-                                    </select>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label for="edit-budget-start-date" class="form-label">Start Date</label>
-                                        <input type="date" class="form-control" id="edit-budget-start-date" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="edit-budget-end-date" class="form-label">End Date</label>
-                                        <input type="date" class="form-control" id="edit-budget-end-date" required>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-danger me-auto" id="delete-budget">Delete</button>
-                            <button type="button" class="btn btn-primary" id="update-budget">Update Budget</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- User Profile Modal -->
-            <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="profileModalLabel">User Profile</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label">Username:</label>
-                                <span id="profile-username"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Email:</label>
-                                <span id="profile-email"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Joined:</label>
-                                <span id="profile-created"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label for="profile-currency" class="form-label">Currency</label>
-                                <select class="form-select" id="profile-currency">
-                                    <option value="USD">$ USD</option>
-                                    <option value="EUR">€ EUR</option>
-                                    <option value="GBP">£ GBP</option>
-                                    <option value="LKR">Rs LKR</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="save-profile">Save</button>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </button>
+                        <button type="button" class="btn btn-success" id="save-budget">
+                            <i class="fas fa-save me-1"></i>Create Budget
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="/app.js"></script>
-    </body>
-</html>
+        <!-- Edit Budget Modal -->
+        <div class="modal fade" id="editBudgetModal" tabindex="-1" aria-labelledby="editBudgetModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title" id="editBudgetModalLabel">
+                            <i class="fas fa-edit me-2"></i>Edit Budget
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="edit-budget-form">
+                            <input type="hidden" id="edit-budget-id">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit-budget-name" class="form-label">
+                                        <i class="fas fa-tag me-1 text-primary"></i>Budget Name *
+                                    </label>
+                                    <input type="text" class="form-control" id="edit-budget-name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit-budget-amount" class="form-label">
+                                        <i class="fas fa-dollar-sign me-1 text-success"></i>Amount *
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text currency-symbol">$</span>
+                                        <input type="number" class="form-control" id="edit-budget-amount" step="0.01" min="0.01" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="edit-budget-category" class="form-label">
+                                        <i class="fas fa-tags me-1 text-info"></i>Category (Optional)
+                                        </label>
+                                        <select class="form-select" id="edit-budget-category">
+                                            <option value="">All Categories</option>
+                                            <!-- Categories will be loaded here -->
+                                        </select>
+                                        </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="edit-budget-start-date" class="form-label">
+                                                    <i class="fas fa-play me-1"></i>Start Date *
+                                                </label>
+                                                <input type="date" class="form-control" id="edit-budget-start-date" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="edit-budget-end-date" class="form-label">
+                                                    <i class="fas fa-stop me-1"></i>End Date *
+                                                </label>
+                                                <input type="date" class="form-control" id="edit-budget-end-date" required>
+                                            </div>
+                                        </div>
+                                        </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                <i class="fas fa-times me-1"></i>Cancel
+                                            </button>
+                                            <button type="button" class="btn btn-danger me-auto" id="delete-budget">
+                                                <i class="fas fa-trash me-1"></i>Delete
+                                            </button>
+                                            <button type="button" class="btn btn-primary" id="update-budget">
+                                                <i class="fas fa-save me-1"></i>Update Budget
+                                            </button>
+                                        </div>
+                                        </div>
+                                        </div>
+                                        </div>
+                                        
+                                        <!-- Add Expense Modal -->
+                                        <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-primary text-white">
+                                                        <h5 class="modal-title" id="addExpenseModalLabel">
+                                                            <i class="fas fa-plus-circle me-2"></i>Add New Expense
+                                                        </h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form id="add-expense-form">
+                                                            <div class="row">
+                                                                <div class="col-md-6 mb-3">
+                                                                    <label for="expense-amount" class="form-label">
+                                                                        <i class="fas fa-dollar-sign me-1 text-success"></i>Amount *
+                                                                    </label>
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-text currency-symbol">$</span>
+                                                                        <input type="number" class="form-control" id="expense-amount" step="0.01" min="0.01" placeholder="0.00" required>
+                                                                    </div>
+                                                                    <div class="form-text">Enter the expense amount</div>
+                                                                </div>
+                                                                <div class="col-md-6 mb-3">
+                                                                    <label for="expense-category" class="form-label">
+                                                                        <i class="fas fa-tags me-1 text-info"></i>Category *
+                                                                    </label>
+                                                                    <select class="form-select" id="expense-category" required>
+                                                                        <option value="">Select a category</option>
+                                                                        <!-- Categories will be loaded here -->
+                                                                    </select>
+                                                                    <div class="form-text">Choose expense category</div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 mb-3">
+                                                                    <label for="expense-date" class="form-label">
+                                                                        <i class="fas fa-calendar me-1 text-warning"></i>Date *
+                                                                    </label>
+                                                                    <input type="date" class="form-control" id="expense-date" required>
+                                                                    <div class="form-text">When did this expense occur?</div>
+                                                                </div>
+                                                                <div class="col-md-6 mb-3">
+                                                                    <label for="expense-method" class="form-label">
+                                                                        <i class="fas fa-credit-card me-1 text-primary"></i>Payment Method
+                                                                    </label>
+                                                                    <select class="form-select" id="expense-method">
+                                                                        <option value="cash">💵 Cash</option>
+                                                                        <option value="credit">💳 Credit Card</option>
+                                                                    </select>
+                                                                    <div class="form-text">How was this paid?</div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="expense-description" class="form-label">
+                                                                    <i class="fas fa-comment me-1 text-secondary"></i>Description
+                                                                </label>
+                                                                <input type="text" class="form-control" id="expense-description" placeholder="Enter expense description (optional)">
+                                                                <div class="form-text">Add any additional details about this expense</div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                            <i class="fas fa-times me-1"></i>Cancel
+                                                        </button>
+                                                        <button type="button" class="btn btn-primary" id="save-expense">
+                                                            <i class="fas fa-save me-1"></i>Save Expense
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Edit Expense Modal -->
+                                        <div class="modal fade" id="editExpenseModal" tabindex="-1" aria-labelledby="editExpenseModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-warning text-dark">
+                                                        <h5 class="modal-title" id="editExpenseModalLabel">
+                                                            <i class="fas fa-edit me-2"></i>Edit Expense
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form id="edit-expense-form">
+                                                            <input type="hidden" id="edit-expense-id">
+                                                            <div class="row">
+                                                                <div class="col-md-6 mb-3">
+                                                                    <label for="edit-expense-amount" class="form-label">
+                                                                        <i class="fas fa-dollar-sign me-1 text-success"></i>Amount *
+                                                                    </label>
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-text currency-symbol">$</span>
+                                                                        <input type="number" class="form-control" id="edit-expense-amount" step="0.01" min="0.01" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6 mb-3">
+                                                                    <label for="edit-expense-category" class="form-label">
+                                                                        <i class="fas fa-tags me-1 text-info"></i>Category *
+                                                                    </label>
+                                                                    <select class="form-select" id="edit-expense-category" required>
+                                                                        <!-- Categories will be loaded here -->
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 mb-3">
+                                                                    <label for="edit-expense-date" class="form-label">
+                                                                        <i class="fas fa-calendar me-1 text-warning"></i>Date *
+                                                                    </label>
+                                                                    <input type="date" class="form-control" id="edit-expense-date" required>
+                                                                </div>
+                                                                <div class="col-md-6 mb-3">
+                                                                    <label for="edit-expense-method" class="form-label">
+                                                                        <i class="fas fa-credit-card me-1 text-primary"></i>Payment Method
+                                                                    </label>
+                                                                    <select class="form-select" id="edit-expense-method">
+                                                                        <option value="cash">💵 Cash</option>
+                                                                        <option value="credit">💳 Credit Card</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="edit-expense-description" class="form-label">
+                                                                    <i class="fas fa-comment me-1 text-secondary"></i>Description
+                                                                </label>
+                                                                <input type="text" class="form-control" id="edit-expense-description" placeholder="Enter expense description (optional)">
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                            <i class="fas fa-times me-1"></i>Cancel
+                                                        </button>
+                                                        <button type="button" class="btn btn-danger me-auto" id="delete-expense">
+                                                            <i class="fas fa-trash me-1"></i>Delete
+                                                        </button>
+                                                        <button type="button" class="btn btn-primary" id="update-expense">
+                                                            <i class="fas fa-save me-1"></i>Update Expense
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- User Profile Modal -->
+                                        <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-info text-white">
+                                                        <h5 class="modal-title" id="profileModalLabel">
+                                                            <i class="fas fa-user-circle me-2"></i>User Profile
+                                                        </h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="text-center mb-4">
+                                                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                                                <i class="fas fa-user fa-2x text-muted"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-4">
+                                                                <strong><i class="fas fa-user me-2"></i>Username:</strong>
+                                                            </div>
+                                                            <div class="col-sm-8">
+                                                                <span id="profile-username">-</span>
+                                                            </div>
+                                                        </div>
+                                                        <hr>
+                                                        <div class="row">
+                                                            <div class="col-sm-4">
+                                                                <strong><i class="fas fa-envelope me-2"></i>Email:</strong>
+                                                            </div>
+                                                            <div class="col-sm-8">
+                                                                <span id="profile-email">-</span>
+                                                            </div>
+                                                        </div>
+                                                        <hr>
+                                                        <div class="row">
+                                                            <div class="col-sm-4">
+                                                                <strong><i class="fas fa-calendar me-2"></i>Joined:</strong>
+                                                            </div>
+                                                            <div class="col-sm-8">
+                                                                <span id="profile-created">-</span>
+                                                            </div>
+                                                        </div>
+                                                        <hr>
+                                                        <div class="mb-3">
+                                                            <label for="profile-currency" class="form-label">
+                                                                <strong><i class="fas fa-money-bill-wave me-2"></i>Currency</strong>
+                                                            </label>
+                                                            <select class="form-select" id="profile-currency">
+                                                                <option value="USD">🇺🇸 USD - US Dollar</option>
+                                                                <option value="EUR">🇪🇺 EUR - Euro</option>
+                                                                <option value="GBP">🇬🇧 GBP - British Pound</option>
+                                                                <option value="LKR">🇱🇰 LKR - Sri Lankan Rupee</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                            <i class="fas fa-times me-1"></i>Close
+                                                        </button>
+                                                        <button type="button" class="btn btn-info" id="save-profile">
+                                                            <i class="fas fa-save me-1"></i>Save Changes
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Confirmation Modal -->
+                                        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger text-white">
+                                                        <h5 class="modal-title" id="confirmationModalLabel">
+                                                            <i class="fas fa-exclamation-triangle me-2"></i>Confirm Action
+                                                        </h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p id="confirmation-message">Are you sure you want to proceed?</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                            <i class="fas fa-times me-1"></i>Cancel
+                                                        </button>
+                                                        <button type="button" class="btn btn-danger" id="confirm-action">
+                                                            <i class="fas fa-check me-1"></i>Confirm
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Loading Spinner Overlay -->
+                                        <div id="loading-overlay" class="d-none"
+                                            style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+                                            <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Scripts -->
+                                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+                                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                                        <script src="/app.js"></script>
+                                        
+                                        <script>
+                                            // Enhanced budgets-specific functionality
+                                            document.addEventListener('DOMContentLoaded', function () {
+                                                // Update quick stats when budgets are loaded
+                                                function updateQuickStats(budgets) {
+                                                    if (!budgets || budgets.length === 0) {
+                                                        document.getElementById('total-budgets-display').textContent = '0';
+                                                        document.getElementById('total-budget-amount-display').innerHTML = '<span class="currency-symbol">$</span>0.00';
+                                                        document.getElementById('total-spent-display').innerHTML = '<span class="currency-symbol">$</span>0.00';
+                                                        document.getElementById('budgets-on-track-display').textContent = '0';
+                                                        document.getElementById('active-budgets-empty').classList.remove('d-none');
+                                                        document.getElementById('budgets-empty-state').classList.remove('d-none');
+                                                        return;
+                                                    }
+
+                                                    document.getElementById('active-budgets-empty').classList.add('d-none');
+                                                    document.getElementById('budgets-empty-state').classList.add('d-none');
+
+                                                    const totalBudgetAmount = budgets.reduce((sum, budget) => sum + budget.amount, 0);
+                                                    const totalSpent = budgets.reduce((sum, budget) => sum + (budget.spent || 0), 0);
+                                                    const onTrackCount = budgets.filter(budget => getBudgetStatus(budget) === 'on-track').length;
+
+                                                    // Animate the values
+                                                    animateValue(document.getElementById('total-budgets-display'), 0, budgets.length, 800, false);
+                                                    animateValue(document.getElementById('total-budget-amount-display'), 0, totalBudgetAmount, 1000, true);
+                                                    animateValue(document.getElementById('total-spent-display'), 0, totalSpent, 1200, true);
+                                                    animateValue(document.getElementById('budgets-on-track-display'), 0, onTrackCount, 600, false);
+                                                }
+
+                                                // Enhanced budget card creation
+                                                function createBudgetCard(budget) {
+                                                    const percentage = budget.amount > 0 ? Math.min((budget.spent / budget.amount) * 100, 100) : 0;
+                                                    const status = getBudgetStatus(budget);
+                                                    const statusClass = status === 'on-track' ? 'success' : status === 'warning' ? 'warning' : 'danger';
+                                                    const remaining = budget.amount - (budget.spent || 0);
+
+                                                    const card = document.createElement('div');
+                                                    card.className = 'col-lg-4 col-md-6 mb-4 fade-in';
+
+                                                    card.innerHTML = `
+                                                                <div class="budget-card ${status === 'over-budget' ? 'border-danger' : ''}">
+                                                                    ${status === 'over-budget' ? '<div class="budget-notification"></div>' : ''}
+                                                                    <div class="budget-header">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <div class="budget-icon ${statusClass}">
+                                                                                <i class="fas ${status === 'on-track' ? 'fa-check' : status === 'warning' ? 'fa-exclamation' : 'fa-exclamation-triangle'}"></i>
+                                                                            </div>
+                                                                            <div class="flex-grow-1">
+                                                                                <h6 class="mb-1">${budget.name}</h6>
+                                                                                <small class="opacity-75">
+                                                                                    ${budget.category ? budget.category.name : 'All Categories'}
+                                                                                </small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="card-body">
+                                                                        <div class="budget-detail-item">
+                                                                            <span class="budget-detail-label">Budget Amount</span>
+                                                                            <span class="budget-detail-value">${formatCurrency(budget.amount)}</span>
+                                                                        </div>
+                                                                        <div class="budget-detail-item">
+                                                                            <span class="budget-detail-label">Spent</span>
+                                                                            <span class="budget-detail-value text-danger">${formatCurrency(budget.spent || 0)}</span>
+                                                                        </div>
+                                                                        <div class="budget-detail-item">
+                                                                            <span class="budget-detail-label">Remaining</span>
+                                                                            <span class="budget-detail-value ${remaining >= 0 ? 'text-success' : 'text-danger'}">
+                                                                                ${formatCurrency(remaining)}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="budget-progress">
+                                                                            <div class="budget-progress-bar ${statusClass}" style="width: ${percentage}%"></div>
+                                                                        </div>
+                                                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                                                            <span class="budget-status-badge status-${status}">
+                                                                                ${status.replace('-', ' ').toUpperCase()}
+                                                                            </span>
+                                                                            <span class="text-muted">${percentage.toFixed(1)}%</span>
+                                                                        </div>
+                                                                        <div class="mt-3 d-flex gap-2">
+                                                                            <button class="btn btn-outline-primary btn-sm edit-budget-btn" data-id="${budget.id}">
+                                                                                <i class="fas fa-edit me-1"></i>Edit
+                                                                            </button>
+                                                                            <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                                                                                <i class="fas fa-plus me-1"></i>Add Expense
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            `;
+
+                                                    return card;
+                                                }
+
+                                                // Enhanced table row creation
+                                                function createBudgetRow(budget) {
+                                                    const row = document.createElement('tr');
+                                                    row.className = 'fade-in';
+
+                                                    const percentage = budget.amount > 0 ? (budget.spent / budget.amount) * 100 : 0;
+                                                    const status = getBudgetStatus(budget);
+                                                    const remaining = budget.amount - (budget.spent || 0);
+                                                    const categoryColor = budget.category ? budget.category.color : '#6c757d';
+
+                                                    row.innerHTML = `
+                                                                <td>
+                                                                    <div class="d-flex align-items-center">
+                                                                        <i class="fas fa-calculator text-primary me-2"></i>
+                                                                        <strong>${budget.name}</strong>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="category-badge" style="background-color: ${categoryColor}">
+                                                                        ${budget.category ? budget.category.name : 'All Categories'}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="budget-period-badge">
+                                                                        ${formatBudgetPeriod(budget)}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <strong class="text-primary">${formatCurrency(budget.amount)}</strong>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="text-danger">${formatCurrency(budget.spent || 0)}</span>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="${remaining >= 0 ? 'text-success' : 'text-danger'}">
+                                                                        ${formatCurrency(remaining)}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="budget-status-badge status-${status}">
+                                                                        ${status.replace('-', ' ').toUpperCase()}
+                                                                    </span>
+                                                                    <div class="budget-progress mt-1">
+                                                                        <div class="budget-progress-bar ${status === 'on-track' ? 'success' : status === 'warning' ? 'warning' : 'danger'}" 
+                                                                             style="width: ${Math.min(percentage, 100)}%"></div>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <button class="btn btn-outline-primary action-btn edit-budget-btn me-1" data-id="${budget.id}" title="Edit Budget">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                    <button class="btn btn-outline-success action-btn" data-bs-toggle="modal" data-bs-target="#addExpenseModal" title="Add Expense">
+                                                                        <i class="fas fa-plus"></i>
+                                                                    </button>
+                                                                </td>
+                                                            `;
+
+                                                    return row;
+                                                }
+
+                                                // Budget status calculation
+                                                function getBudgetStatus(budget) {
+                                                    const percentage = budget.amount > 0 ? (budget.spent / budget.amount) * 100 : 0;
+                                                    if (percentage >= 100) return 'over-budget';
+                                                    if (percentage >= 80) return 'warning';
+                                                    return 'on-track';
+                                                }
+
+                                                // Format budget period
+                                                function formatBudgetPeriod(budget) {
+                                                    if (budget.period === 'monthly') return '📅 Monthly';
+                                                    if (budget.period === 'quarterly') return '📊 Quarterly';
+                                                    if (budget.period === 'yearly') return '🗓️ Yearly';
+                                                    return '⚙️ Custom';
+                                                }
+
+                                                // Override the original loadBudgets function to use enhanced features
+                                                const originalLoadBudgets = window.loadBudgets;
+                                                window.loadBudgets = function () {
+                                                    if (originalLoadBudgets) {
+                                                        return originalLoadBudgets().then(budgets => {
+                                                            updateQuickStats(budgets);
+
+                                                            // Enhanced budget cards
+                                                            const cardsContainer = document.getElementById('active-budgets-container');
+                                                            if (cardsContainer && budgets && budgets.length > 0) {
+                                                                cardsContainer.innerHTML = '';
+                                                                budgets.slice(0, 6).forEach(budget => { // Show only first 6 active budgets
+                                                                    const card = createBudgetCard(budget);
+                                                                    cardsContainer.appendChild(card);
+                                                                });
+                                                            }
+
+                                                            // Enhanced table population
+                                                            const tableBody = document.getElementById('budgets-table');
+                                                            if (tableBody && budgets && budgets.length > 0) {
+                                                                tableBody.innerHTML = '';
+                                                                budgets.forEach(budget => {
+                                                                    const row = createBudgetRow(budget);
+                                                                    tableBody.appendChild(row);
+                                                                });
+
+                                                                // Re-attach event listeners
+                                                                document.querySelectorAll('.edit-budget-btn').forEach(button => {
+                                                                    button.addEventListener('click', function () {
+                                                                        const budgetId = this.getAttribute('data-id');
+                                                                        openEditBudgetModal(budgetId);
+                                                                    });
+                                                                });
+                                                            }
+
+                                                            return budgets;
+                                                        });
+                                                    }
+                                                };
+
+                                                // Export functionality
+                                                window.exportBudgets = function (format) {
+                                                    const budgets = window.budgets || [];
+                                                    if (budgets.length === 0) {
+                                                        showToast('No budgets to export', 'warning');
+                                                        return;
+                                                    }
+
+                                                    if (format === 'csv') {
+                                                        exportBudgetsToCSV(budgets);
+                                                    } else if (format === 'excel') {
+                                                        exportBudgetsToExcel(budgets);
+                                                    }
+                                                };
+
+                                                function exportBudgetsToCSV(budgets) {
+                                                    const headers = ['Name', 'Category', 'Period', 'Budget Amount', 'Spent', 'Remaining', 'Status', 'Start Date', 'End Date'];
+                                                    const csvContent = [
+                                                        headers.join(','),
+                                                        ...budgets.map(budget => {
+                                                            const remaining = budget.amount - (budget.spent || 0);
+                                                            const status = getBudgetStatus(budget);
+                                                            return [
+                                                                `"${budget.name}"`,
+                                                                budget.category ? budget.category.name : 'All Categories',
+                                                                budget.period || 'monthly',
+                                                                budget.amount,
+                                                                budget.spent || 0,
+                                                                remaining,
+                                                                status,
+                                                                budget.start_date || '',
+                                                                budget.end_date || ''
+                                                            ].join(',');
+                                                        })
+                                                    ].join('\n');
+
+                                                    downloadFile(csvContent, 'budgets.csv', 'text/csv');
+                                                }
+
+                                                function exportBudgetsToExcel(budgets) {
+                                                    // This would require a library like SheetJS for proper Excel export
+                                                    // For now, we'll export as CSV with .xlsx extension
+                                                    showToast('Excel export feature coming soon! Exporting as CSV instead.', 'info');
+                                                    exportBudgetsToCSV(budgets);
+                                                }
+
+                                                function downloadFile(content, fileName, contentType) {
+                                                    const blob = new Blob([content], { type: contentType });
+                                                    const url = window.URL.createObjectURL(blob);
+                                                    const a = document.createElement('a');
+                                                    a.href = url;
+                                                    a.download = fileName;
+                                                    document.body.appendChild(a);
+                                                    a.click();
+                                                    document.body.removeChild(a);
+                                                    window.URL.revokeObjectURL(url);
+                                                    showToast(`Exported ${fileName} successfully!`, 'success');
+                                                }
+
+                                                // Utility functions
+                                                function animateValue(element, start, end, duration, isCurrency = false) {
+                                                    let startTimestamp = null;
+                                                    const step = (timestamp) => {
+                                                        if (!startTimestamp) startTimestamp = timestamp;
+                                                        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                                                        const current = progress * (end - start) + start;
+
+                                                        if (isCurrency) {
+                                                            const symbol = element.querySelector('.currency-symbol');
+                                                            if (symbol) {
+                                                                element.innerHTML = symbol.outerHTML + current.toFixed(2);
+                                                            } else {
+                                                                element.textContent = formatCurrency(current);
+                                                            }
+                                                        } else {
+                                                            element.textContent = Math.floor(current);
+                                                        }
+
+                                                        if (progress < 1) {
+                                                            window.requestAnimationFrame(step);
+                                                        }
+                                                    };
+                                                    window.requestAnimationFrame(step);
+                                                }
+
+                                                // Show/hide custom date fields based on period selection
+                                                document.getElementById('budget-period')?.addEventListener('change', function () {
+                                                    const customDates = document.getElementById('budget-custom-dates');
+                                                    if (this.value === 'custom') {
+                                                        customDates.classList.remove('d-none');
+                                                    } else {
+                                                        customDates.classList.add('d-none');
+                                                    }
+                                                });
+
+                                                // Keyboard shortcuts
+                                                document.addEventListener('keydown', function (e) {
+                                                    // Ctrl/Cmd + N = Add Budget
+                                                    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                                                        e.preventDefault();
+                                                        const addBudgetModal = new bootstrap.Modal(document.getElementById('addBudgetModal'));
+                                                        addBudgetModal.show();
+                                                    }
+
+                                                    // Ctrl/Cmd + F = Focus on filters
+                                                    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                                                        e.preventDefault();
+                                                        document.getElementById('budget-status-filter').focus();
+                                                    }
+                                                });
+
+                                                // Auto-save draft functionality for forms
+                                                const formFields = ['budget-name', 'budget-amount'];
+                                                formFields.forEach(fieldId => {
+                                                    const field = document.getElementById(fieldId);
+                                                    if (field) {
+                                                        field.addEventListener('input', function () {
+                                                            localStorage.setItem(`draft_${fieldId}`, this.value);
+                                                        });
+
+                                                        // Restore draft on page load
+                                                        const draftValue = localStorage.getItem(`draft_${fieldId}`);
+                                                        if (draftValue) {
+                                                            field.value = draftValue;
+                                                        }
+                                                    }
+                                                });
+
+                                                // Clear drafts when form is submitted successfully
+                                                document.getElementById('save-budget')?.addEventListener('click', function () {
+                                                    formFields.forEach(fieldId => {
+                                                        localStorage.removeItem(`draft_${fieldId}`);
+                                                    });
+                                                });
+
+                                                // Enhanced budget notifications
+                                                function checkBudgetAlerts() {
+                                                    const budgets = window.budgets || [];
+                                                    let alertCount = 0;
+
+                                                    budgets.forEach(budget => {
+                                                        const status = getBudgetStatus(budget);
+                                                        if (status === 'over-budget' || status === 'warning') {
+                                                            alertCount++;
+                                                        }
+                                                    });
+
+                                                    if (alertCount > 0) {
+                                                        showBudgetAlert(alertCount);
+                                                    }
+                                                }
+
+                                                function showBudgetAlert(count) {
+                                                    const alertMessage = count === 1
+                                                        ? 'You have 1 budget that needs attention!'
+                                                        : `You have ${count} budgets that need attention!`;
+
+                                                    showToast(alertMessage, 'warning', 5000);
+                                                }
+
+                                                // Enhanced search and filter functionality
+                                                document.getElementById('apply-budget-filters')?.addEventListener('click', function () {
+                                                    const statusFilter = document.getElementById('budget-status-filter').value;
+                                                    const categoryFilter = document.getElementById('budget-category-filter').value;
+                                                    const periodFilter = document.getElementById('budget-period-filter').value;
+
+                                                    filterBudgets(statusFilter, categoryFilter, periodFilter);
+                                                });
+
+                                                function filterBudgets(status, category, period) {
+                                                    const budgets = window.budgets || [];
+
+                                                    const filteredBudgets = budgets.filter(budget => {
+                                                        let matchesStatus = true;
+                                                        let matchesCategory = true;
+                                                        let matchesPeriod = true;
+
+                                                        if (status) {
+                                                            matchesStatus = getBudgetStatus(budget) === status;
+                                                        }
+
+                                                        if (category) {
+                                                            matchesCategory = budget.category && budget.category.id == category;
+                                                        }
+
+                                                        if (period) {
+                                                            matchesPeriod = budget.period === period;
+                                                        }
+
+                                                        return matchesStatus && matchesCategory && matchesPeriod;
+                                                    });
+
+                                                    // Update display with filtered results
+                                                    updateBudgetDisplay(filteredBudgets);
+
+                                                    const filterCount = filteredBudgets.length;
+                                                    const totalCount = budgets.length;
+
+                                                    showToast(`Showing ${filterCount} of ${totalCount} budgets`, 'info', 3000);
+                                                }
+
+                                                function updateBudgetDisplay(budgets) {
+                                                    // Update cards
+                                                    const cardsContainer = document.getElementById('active-budgets-container');
+                                                    if (cardsContainer) {
+                                                        cardsContainer.innerHTML = '';
+                                                        budgets.slice(0, 6).forEach(budget => {
+                                                            const card = createBudgetCard(budget);
+                                                            cardsContainer.appendChild(card);
+                                                        });
+                                                    }
+
+                                                    // Update table
+                                                    const tableBody = document.getElementById('budgets-table');
+                                                    if (tableBody) {
+                                                        tableBody.innerHTML = '';
+                                                        budgets.forEach(budget => {
+                                                            const row = createBudgetRow(budget);
+                                                            tableBody.appendChild(row);
+                                                        });
+
+                                                        // Re-attach event listeners
+                                                        document.querySelectorAll('.edit-budget-btn').forEach(button => {
+                                                            button.addEventListener('click', function () {
+                                                                const budgetId = this.getAttribute('data-id');
+                                                                openEditBudgetModal(budgetId);
+                                                            });
+                                                        });
+                                                    }
+
+                                                    // Show/hide empty states
+                                                    if (budgets.length === 0) {
+                                                        document.getElementById('active-budgets-empty')?.classList.remove('d-none');
+                                                        document.getElementById('budgets-empty-state')?.classList.remove('d-none');
+                                                    } else {
+                                                        document.getElementById('active-budgets-empty')?.classList.add('d-none');
+                                                        document.getElementById('budgets-empty-state')?.classList.add('d-none');
+                                                    }
+                                                }
+
+                                                // Budget progress animation on scroll
+                                                const observer = new IntersectionObserver((entries) => {
+                                                    entries.forEach(entry => {
+                                                        if (entry.isIntersecting) {
+                                                            const progressBars = entry.target.querySelectorAll('.budget-progress-bar');
+                                                            progressBars.forEach(bar => {
+                                                                const width = bar.style.width;
+                                                                bar.style.width = '0%';
+                                                                setTimeout(() => {
+                                                                    bar.style.width = width;
+                                                                }, 100);
+                                                            });
+                                                        }
+                                                    });
+                                                }, { threshold: 0.1 });
+
+                                                // Apply animation observer to budget cards
+                                                document.querySelectorAll('.budget-card').forEach(card => {
+                                                    observer.observe(card);
+                                                });
+
+                                                // Enhanced tooltips and help text
+                                                function initializeTooltips() {
+                                                    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+                                                    tooltipTriggerList.map(function (tooltipTriggerEl) {
+                                                        return new bootstrap.Tooltip(tooltipTriggerEl);
+                                                    });
+                                                }
+
+                                                // Budget recommendation system
+                                                function provideBudgetRecommendations() {
+                                                    const budgets = window.budgets || [];
+                                                    const expenses = window.expenses || [];
+
+                                                    if (expenses.length > 0 && budgets.length === 0) {
+                                                        showToast('💡 Tip: Create budgets based on your spending patterns to better control your finances!', 'info', 7000);
+                                                    }
+
+                                                    const overBudgetCount = budgets.filter(b => getBudgetStatus(b) === 'over-budget').length;
+                                                    if (overBudgetCount > 0) {
+                                                        showToast(`💰 ${overBudgetCount} budget(s) are over limit. Consider adjusting your spending or budget amounts.`, 'warning', 8000);
+                                                    }
+                                                }
+
+                                                // Real-time budget updates
+                                                function updateBudgetProgress(budgetId, newSpentAmount) {
+                                                    const budgetCard = document.querySelector(`[data-id="${budgetId}"]`)?.closest('.budget-card');
+                                                    if (budgetCard) {
+                                                        const progressBar = budgetCard.querySelector('.budget-progress-bar');
+                                                        const budget = window.budgets?.find(b => b.id == budgetId);
+
+                                                        if (budget && progressBar) {
+                                                            const newPercentage = (newSpentAmount / budget.amount) * 100;
+                                                            progressBar.style.width = `${Math.min(newPercentage, 100)}%`;
+
+                                                            // Update status classes
+                                                            const newStatus = getBudgetStatus({ ...budget, spent: newSpentAmount });
+                                                            progressBar.className = `budget-progress-bar ${newStatus === 'on-track' ? 'success' : newStatus === 'warning' ? 'warning' : 'danger'}`;
+                                                        }
+                                                    }
+                                                }
+
+                                                // Smart budget suggestions
+                                                function suggestBudgetAmounts() {
+                                                    const expenses = window.expenses || [];
+                                                    if (expenses.length === 0) return;
+
+                                                    const lastThreeMonths = expenses.filter(exp => {
+                                                        const expDate = new Date(exp.date);
+                                                        const threeMonthsAgo = new Date();
+                                                        threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+                                                        return expDate >= threeMonthsAgo;
+                                                    });
+
+                                                    const categorySpending = {};
+                                                    lastThreeMonths.forEach(exp => {
+                                                        const category = exp.category?.name || 'Uncategorized';
+                                                        categorySpending[category] = (categorySpending[category] || 0) + exp.amount;
+                                                    });
+
+                                                    // Show suggestions when adding a new budget
+                                                    const budgetCategorySelect = document.getElementById('budget-category');
+                                                    if (budgetCategorySelect) {
+                                                        budgetCategorySelect.addEventListener('change', function () {
+                                                            const selectedCategory = this.options[this.selectedIndex].text;
+                                                            const avgSpending = categorySpending[selectedCategory];
+
+                                                            if (avgSpending) {
+                                                                const suggestedAmount = Math.ceil(avgSpending / 3 * 1.1); // 10% buffer
+                                                                const amountField = document.getElementById('budget-amount');
+                                                                if (amountField && !amountField.value) {
+                                                                    amountField.value = suggestedAmount;
+                                                                    showToast(`💡 Suggested budget: $${suggestedAmount} (based on your spending history)`, 'info', 5000);
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                }
+
+                                                // Performance monitoring
+                                                function trackBudgetPerformance() {
+                                                    const budgets = window.budgets || [];
+                                                    const performanceData = budgets.map(budget => {
+                                                        const percentage = budget.amount > 0 ? (budget.spent / budget.amount) * 100 : 0;
+                                                        return {
+                                                            name: budget.name,
+                                                            percentage: percentage,
+                                                            status: getBudgetStatus(budget),
+                                                            efficiency: percentage <= 100 ? 'good' : 'poor'
+                                                        };
+                                                    });
+
+                                                    // Store performance data for analytics
+                                                    localStorage.setItem('budgetPerformance', JSON.stringify(performanceData));
+                                                }
+
+                                                // Initialize all enhanced features
+                                                function initializeEnhancedFeatures() {
+                                                    initializeTooltips();
+                                                    suggestBudgetAmounts();
+                                                    checkBudgetAlerts();
+                                                    provideBudgetRecommendations();
+                                                    trackBudgetPerformance();
+                                                }
+
+                                                // Call initialization
+                                                setTimeout(initializeEnhancedFeatures, 1000);
+
+                                                // Intersection Observer for cards animation
+                                                document.querySelectorAll('.card').forEach(card => {
+                                                    card.style.opacity = '0';
+                                                    card.style.transform = 'translateY(20px)';
+                                                    card.style.transition = 'all 0.6s ease-out';
+                                                    observer.observe(card);
+                                                });
+
+                                                // Enhanced budget validation
+                                                function validateBudgetForm(form) {
+                                                    const name = form.querySelector('#budget-name, #edit-budget-name')?.value;
+                                                    const amount = parseFloat(form.querySelector('#budget-amount, #edit-budget-amount')?.value);
+                                                    const startDate = form.querySelector('#budget-start-date, #edit-budget-start-date')?.value;
+                                                    const endDate = form.querySelector('#budget-end-date, #edit-budget-end-date')?.value;
+
+                                                    if (!name || name.trim().length < 3) {
+                                                        showToast('Budget name must be at least 3 characters long', 'error');
+                                                        return false;
+                                                    }
+
+                                                    if (!amount || amount <= 0) {
+                                                        showToast('Budget amount must be greater than zero', 'error');
+                                                        return false;
+                                                    }
+
+                                                    if (startDate && endDate && new Date(startDate) >= new Date(endDate)) {
+                                                        showToast('End date must be after start date', 'error');
+                                                        return false;
+                                                    }
+
+                                                    return true;
+                                                }
+
+                                                // Override form submission to include validation
+                                                document.getElementById('save-budget')?.addEventListener('click', function (e) {
+                                                    const form = document.getElementById('add-budget-form');
+                                                    if (!validateBudgetForm(form)) {
+                                                        e.preventDefault();
+                                                        return false;
+                                                    }
+                                                });
+
+                                                document.getElementById('update-budget')?.addEventListener('click', function (e) {
+                                                    const form = document.getElementById('edit-budget-form');
+                                                    if (!validateBudgetForm(form)) {
+                                                        e.preventDefault();
+                                                        return false;
+                                                    }
+                                                });
+                                            });
+
+                                                        // Enhanced error handling
+                                                        window.addEventListener('error', function (e) {
+                                                            console.error('Budgets page error:', e.error);
+                                                            showToast('An unexpected error occurred. Please refresh the page.', 'error');
+                                                        });
+
+                                                        // Global utility functions for budget management
+                                                        window.getBudgetStatus = function (budget) {
+                                                            const percentage = budget.amount > 0 ? (budget.spent / budget.amount) * 100 : 0;
+                                                            if (percentage >= 100) return 'over-budget';
+                                                            if (percentage >= 80) return 'warning';
+                                                            return 'on-track';
+                                                        };
+
+                                                        window.formatBudgetPeriod = function (budget) {
+                                                            if (budget.period === 'monthly') return '📅 Monthly';
+                                                            if (budget.period === 'quarterly') return '📊 Quarterly';
+                                                            if (budget.period === 'yearly') return '🗓️ Yearly';
+                                                            return '⚙️ Custom';
+                                                        };
+
+                                                        // Enhanced budget analytics
+                                                        window.generateBudgetInsights = function () {
+                                                            const budgets = window.budgets || [];
+                                                            const insights = {
+                                                                totalBudgets: budgets.length,
+                                                                totalBudgetAmount: budgets.reduce((sum, b) => sum + b.amount, 0),
+                                                                totalSpent: budgets.reduce((sum, b) => sum + (b.spent || 0), 0),
+                                                                averageUtilization: budgets.length > 0 ?
+                                                                    budgets.reduce((sum, b) => sum + (b.spent / b.amount * 100), 0) / budgets.length : 0,
+                                                                budgetsOverLimit: budgets.filter(b => window.getBudgetStatus(b) === 'over-budget').length,
+                                                                budgetsNearLimit: budgets.filter(b => window.getBudgetStatus(b) === 'warning').length,
+                                                                budgetsOnTrack: budgets.filter(b => window.getBudgetStatus(b) === 'on-track').length
+                                                            };
+
+                                                            return insights;
+                                                        };
+                                                    </script>
+        </body>
+        </html>
