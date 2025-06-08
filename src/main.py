@@ -82,43 +82,43 @@ def register_page():
 @app.route('/dashboard')
 @login_required
 def dashboard_page():
-    return render_template('dashboard.html')
+    return render_template('dashboard.html', active_page='dashboard')
 
 
 @app.route('/expenses')
 @login_required
 def expenses_page():
-    return render_template('expenses.html')
+    return render_template('expenses.html', active_page='expenses')
 
 
 @app.route('/incomes')
 @login_required
 def incomes_page():
-    return render_template('incomes.html')
+    return render_template('incomes.html', active_page='incomes')
 
 
 @app.route('/savings')
 @login_required
 def savings_page():
-    return render_template('savings.html')
+    return render_template('savings.html', active_page='savings')
 
 
 @app.route('/budgets')
 @login_required
 def budgets_page():
-    return render_template('budgets.html')
+    return render_template('budgets.html', active_page='budgets')
 
 
 @app.route('/reports')
 @login_required
 def reports_page():
-    return render_template('reports.html')
+    return render_template('reports.html', active_page='reports')
 
 
 @app.route('/profile')
 @login_required
 def profile_page():
-    return render_template('profile.html')
+    return render_template('profile.html', active_page='profile')
 
 
 @app.route('/<path:filename>')
