@@ -71,6 +71,8 @@ def get_expenses(current_user):
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
     category_id = request.args.get('category_id')
+    payment_method = request.args.get('payment_method')
+    limit = request.args.get('limit', type=int)
     
     # Base query
     query = Expense.query.filter_by(user_id=current_user.id)
@@ -82,9 +84,15 @@ def get_expenses(current_user):
         query = query.filter(Expense.date <= datetime.strptime(end_date, '%Y-%m-%d').date())
     if category_id:
         query = query.filter_by(category_id=category_id)
+    if payment_method:
+        query = query.filter_by(payment_method=payment_method)
     
-    # Order by date descending
-    expenses = query.order_by(Expense.date.desc()).all()
+    # Order by date descending and apply limit if provided
+    query = query.order_by(Expense.date.desc())
+    if limit:
+        expenses = query.limit(limit).all()
+    else:
+        expenses = query.all()
     
     return jsonify([expense.to_dict() for expense in expenses]), 200
 
@@ -112,6 +120,7 @@ def create_expense(current_user):
     new_expense = Expense(
         amount=float(data['amount']),
         description=data.get('description', ''),
+        payment_method=data.get('payment_method'),
         date=expense_date,
         user_id=current_user.id,
         category_id=data['category_id']
@@ -137,6 +146,8 @@ def update_expense(current_user, expense_id):
         expense.amount = float(data['amount'])
     if data.get('description') is not None:
         expense.description = data['description']
+    if data.get('payment_method') is not None:
+        expense.payment_method = data['payment_method']
     if data.get('category_id'):
         # Validate category exists
         category = Category.query.get(data['category_id'])

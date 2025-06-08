@@ -24,6 +24,7 @@ class Expense(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Float, nullable=False)
     description = db.Column(db.String(255), nullable=True)
+    payment_method = db.Column(db.String(20), nullable=True)
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -34,6 +35,7 @@ class Expense(db.Model):
             'id': self.id,
             'amount': self.amount,
             'description': self.description,
+            'payment_method': self.payment_method,
             'date': self.date.isoformat(),
             'created_at': self.created_at.isoformat(),
             'user_id': self.user_id,
