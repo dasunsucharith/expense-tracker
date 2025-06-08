@@ -9,7 +9,7 @@ class Income(db.Model):
     description = db.Column(db.String(255), nullable=True)
     income_type = db.Column(db.String(50), nullable=False)
     other_source = db.Column(db.String(100), nullable=True)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    date = db.Column(db.Date, nullable=False, default=lambda: datetime.utcnow().date())
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
