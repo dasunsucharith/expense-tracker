@@ -7,7 +7,7 @@ import sys
 # DON'T CHANGE THIS !!!
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from flask import Flask, send_from_directory, jsonify
+from flask import Flask, send_from_directory, jsonify, render_template
 from src.models.user import db
 from flask_migrate import Migrate
 from src.routes.user import user_bp, login_required
@@ -17,7 +17,8 @@ from src.routes.income import income_bp
 from src.routes.saving import saving_bp
 from flask_cors import CORS
 
-app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
+static_dir = os.path.join(os.path.dirname(__file__), 'static')
+app = Flask(__name__, static_folder=static_dir, template_folder=static_dir)
 app.url_map.strict_slashes = False  # Allow routes with or without trailing slash
 CORS(app)  # Enable CORS for all routes
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -67,57 +68,57 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    return send_from_directory(app.static_folder, 'home.html')
+    return render_template('home.html')
 
 @app.route('/login')
 def login_page():
-    return send_from_directory(app.static_folder, 'login.html')
+    return render_template('login.html')
 
 @app.route('/register')
 def register_page():
-    return send_from_directory(app.static_folder, 'register.html')
+    return render_template('register.html')
 
 
 @app.route('/dashboard')
 @login_required
 def dashboard_page():
-    return send_from_directory(app.static_folder, 'dashboard.html')
+    return render_template('dashboard.html')
 
 
 @app.route('/expenses')
 @login_required
 def expenses_page():
-    return send_from_directory(app.static_folder, 'expenses.html')
+    return render_template('expenses.html')
 
 
 @app.route('/incomes')
 @login_required
 def incomes_page():
-    return send_from_directory(app.static_folder, 'incomes.html')
+    return render_template('incomes.html')
 
 
 @app.route('/savings')
 @login_required
 def savings_page():
-    return send_from_directory(app.static_folder, 'savings.html')
+    return render_template('savings.html')
 
 
 @app.route('/budgets')
 @login_required
 def budgets_page():
-    return send_from_directory(app.static_folder, 'budgets.html')
+    return render_template('budgets.html')
 
 
 @app.route('/reports')
 @login_required
 def reports_page():
-    return send_from_directory(app.static_folder, 'reports.html')
+    return render_template('reports.html')
 
 
 @app.route('/profile')
 @login_required
 def profile_page():
-    return send_from_directory(app.static_folder, 'profile.html')
+    return render_template('profile.html')
 
 
 @app.route('/<path:filename>')
