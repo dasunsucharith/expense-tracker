@@ -51,20 +51,24 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <div class="mb-3">
-                <label class="form-label">Username:</label>
-                <span id="profile-username"></span>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="profile-username" placeholder="Username">
+                <label for="profile-username"><i class="fas fa-user me-2"></i>Username</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="profile-email" placeholder="Email">
+                <label for="profile-email"><i class="fas fa-envelope me-2"></i>Email</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="profile-password" placeholder="Password">
+                <label for="profile-password"><i class="fas fa-lock me-2"></i>Password</label>
             </div>
             <div class="mb-3">
-                <label class="form-label">Email:</label>
-                <span id="profile-email"></span>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Joined:</label>
+                <label class="form-label"><i class="fas fa-calendar me-2"></i>Joined:</label>
                 <span id="profile-created"></span>
             </div>
             <div class="mb-3">
-                <label for="profile-currency" class="form-label">Currency</label>
+                <label for="profile-currency" class="form-label"><i class="fas fa-money-bill-wave me-2"></i>Currency</label>
                 <select class="form-select" id="profile-currency">
                     <option value="USD">$ USD</option>
                     <option value="EUR">€ EUR</option>
