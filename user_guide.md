@@ -104,8 +104,24 @@ The main dashboard provides a quick snapshot of your financial status:
 
 The Expense Calculator Web Dashboard is built using:
 - **Backend**: Flask (Python) with MySQL database
+- **Database ORM**: Flask-SQLAlchemy with migrations managed by Flask-Migrate
 - **Frontend**: HTML, CSS, JavaScript with Bootstrap framework
 - **Data Visualization**: Chart.js for interactive charts
+
+### Database Migrations
+After modifying a model, generate and apply a migration without dropping data:
+1. Set the application module:
+   ```bash
+   export FLASK_APP=src.main:app
+   ```
+2. Create a migration script:
+   ```bash
+   flask db migrate -m "describe change"
+   ```
+3. Apply the migration to your database:
+   ```bash
+   flask db upgrade
+   ```
 
 ## Support
 
