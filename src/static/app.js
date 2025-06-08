@@ -329,27 +329,26 @@ function loadDashboardSummary() {
 	const startDate = formatDate(firstDay);
 	const endDate = formatDate(lastDay);
 
-	return fetch(
-		`${API_URL}/api/expense/dashboard/summary?start_date=${startDate}&end_date=${endDate}`,
-		{
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		}
-	)
-		.then((response) => response.json())
-		.then((data) => {
-			// Update summary cards
-			document.getElementById("total-expenses").textContent = formatCurrency(
-				data.total_expenses
-			);
-			document.getElementById("expense-count").textContent = data.expense_count;
-			document.getElementById(
-				"expense-period"
-			).textContent = `${formatMonthYear(firstDay)}`;
+        return fetch(
+                `${API_URL}/api/expense/dashboard/summary?start_date=${startDate}&end_date=${endDate}`,
+                {
+                        headers: {
+                                Authorization: `Bearer ${token}`,
+                        },
+                }
+        )
+                .then((response) => response.json())
+                .then((data) => {
+                        // Update summary cards
+                        const totalEl = document.getElementById("total-expenses");
+                        if (totalEl) totalEl.textContent = formatCurrency(data.total_expenses);
+                        const countEl = document.getElementById("expense-count");
+                        if (countEl) countEl.textContent = data.expense_count;
+                        const periodEl = document.getElementById("expense-period");
+                        if (periodEl) periodEl.textContent = `${formatMonthYear(firstDay)}`;
 
-			return data;
-		})
+                        return data;
+                })
 		.catch((error) => {
 			console.error("Error loading dashboard summary:", error);
 			showToast("Failed to load dashboard summary", "error");
@@ -362,10 +361,11 @@ function loadRecentExpenses() {
 			Authorization: `Bearer ${token}`,
 		},
 	})
-		.then((response) => response.json())
-		.then((data) => {
-			const tableBody = document.getElementById("recent-expenses-table");
-			tableBody.innerHTML = "";
+                .then((response) => response.json())
+                .then((data) => {
+                        const tableBody = document.getElementById("recent-expenses-table");
+                        if (!tableBody) return data;
+                        tableBody.innerHTML = "";
 
                         if (data.length === 0) {
                                 const row = document.createElement("tr");
@@ -406,10 +406,11 @@ function loadBudgetStatus() {
 			Authorization: `Bearer ${token}`,
 		},
 	})
-		.then((response) => response.json())
-		.then((data) => {
-			// Update active budgets count
-			document.getElementById("active-budgets").textContent = data.length;
+                .then((response) => response.json())
+                .then((data) => {
+                        // Update active budgets count
+                        const activeEl = document.getElementById("active-budgets");
+                        if (activeEl) activeEl.textContent = data.length;
 
 			// Calculate total budget and remaining
 			let totalBudget = 0;
@@ -420,18 +421,20 @@ function loadBudgetStatus() {
 				totalRemaining += budget.remaining;
 			});
 
-			// Update budget remaining card
-			document.getElementById("budget-remaining").textContent =
-				formatCurrency(totalRemaining);
+                        // Update budget remaining card
+                        const remainingEl = document.getElementById("budget-remaining");
+                        if (remainingEl)
+                                remainingEl.textContent = formatCurrency(totalRemaining);
 
 			// Update budget status container
-			const container = document.getElementById("budget-status-container");
-			container.innerHTML = "";
+                        const container = document.getElementById("budget-status-container");
+                        if (!container) return data;
+                        container.innerHTML = "";
 
-			if (data.length === 0) {
-				container.innerHTML = '<p class="text-center">No active budgets</p>';
-				return;
-			}
+                        if (data.length === 0) {
+                                container.innerHTML = '<p class="text-center">No active budgets</p>';
+                                return data;
+                        }
 
 			data.forEach((budget) => {
 				const percentUsed = budget.percentage_used;
@@ -767,9 +770,9 @@ function initializeCharts() {
 	}
 
 	// Initialize expenses by category chart
-	const expensesByCategoryCtx = document
-		.getElementById("expenses-by-category-chart")
-		.getContext("2d");
+        const expensesCanvas = document.getElementById("expenses-by-category-chart");
+        if (!expensesCanvas) return;
+        const expensesByCategoryCtx = expensesCanvas.getContext("2d");
 
 	// Get current month date range
 	const today = new Date();
@@ -874,9 +877,9 @@ function initializeCharts() {
 		});
 
 	// Initialize budget vs actual chart
-	const budgetVsActualCtx = document
-		.getElementById("budget-vs-actual-chart")
-		.getContext("2d");
+        const budgetVsActualCanvas = document.getElementById("budget-vs-actual-chart");
+        if (!budgetVsActualCanvas) return;
+        const budgetVsActualCtx = budgetVsActualCanvas.getContext("2d");
 
 	fetch(`${API_URL}/api/budget/dashboard/budget-status`, {
 		headers: {
