@@ -2538,12 +2538,38 @@ function showUserProfile(e) {
 	})
 		.then((response) => response.json())
                 .then((data) => {
-                        document.getElementById("profile-username").textContent = data.username;
-                        document.getElementById("profile-email").textContent = data.email;
-                        document.getElementById("profile-created").textContent = new Date(
-                                data.created_at
-                        ).toLocaleString();
-                        document.getElementById("profile-currency").value = data.currency || "USD";
+                        const usernameEl = document.getElementById("profile-username");
+                        if (usernameEl) {
+                                if (usernameEl.tagName === "INPUT") {
+                                        usernameEl.value = data.username;
+                                } else {
+                                        usernameEl.textContent = data.username;
+                                }
+                        }
+
+                        const emailEl = document.getElementById("profile-email");
+                        if (emailEl) {
+                                if (emailEl.tagName === "INPUT") {
+                                        emailEl.value = data.email;
+                                } else {
+                                        emailEl.textContent = data.email;
+                                }
+                        }
+
+                        const createdEl = document.getElementById("profile-created");
+                        if (createdEl) {
+                                createdEl.textContent = new Date(data.created_at).toLocaleString();
+                        }
+
+                        const currencyEl = document.getElementById("profile-currency");
+                        if (currencyEl) {
+                                currencyEl.value = data.currency || "USD";
+                        }
+
+                        const passwordEl = document.getElementById("profile-password");
+                        if (passwordEl && passwordEl.tagName === "INPUT") {
+                                passwordEl.value = "";
+                        }
 
                         const modalEl = document.getElementById("profileModal");
                         if (modalEl) {
@@ -2557,6 +2583,9 @@ function showUserProfile(e) {
 }
 
 function saveUserProfile() {
+        const username = document.getElementById("profile-username")?.value;
+        const email = document.getElementById("profile-email")?.value;
+        const password = document.getElementById("profile-password")?.value;
         const currency = document.getElementById("profile-currency").value;
 
         fetch(`${API_URL}/api/user/profile`, {
@@ -2565,7 +2594,7 @@ function saveUserProfile() {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ currency }),
+                body: JSON.stringify({ username, email, password, currency }),
         })
                 .then((response) => response.json())
                 .then((data) => {
