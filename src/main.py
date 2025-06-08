@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from flask import Flask, send_from_directory, jsonify
 from src.models.user import db
+from flask_migrate import Migrate
 from src.routes.user import user_bp, login_required
 from src.routes.expense import expense_bp
 from src.routes.budget import budget_bp
@@ -34,6 +35,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+migrate = Migrate(app, db)
 
 # Create database tables
 with app.app_context():

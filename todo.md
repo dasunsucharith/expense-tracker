@@ -25,6 +25,7 @@
   - [x] Budget tracking interface
   - [x] Data visualization components
   - [x] Responsive design
+- [x] Integrate database migrations using Flask-Migrate
 - [x] Implement data visualization
   - [x] Expense breakdown charts
   - [x] Budget vs. actual spending
