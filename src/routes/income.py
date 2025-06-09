@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from src.csrf_utils import csrf_protect
 from src.models.user import db
 from src.models.income import Income
 from src.routes.user import token_required
@@ -27,6 +28,7 @@ def get_incomes(current_user):
 
 @income_bp.route('/incomes', methods=['POST'])
 @token_required
+@csrf_protect
 def create_income(current_user):
     data = request.get_json()
 
@@ -56,6 +58,7 @@ def create_income(current_user):
 
 @income_bp.route('/incomes/<int:income_id>', methods=['PUT'])
 @token_required
+@csrf_protect
 def update_income(current_user, income_id):
     income = Income.query.get_or_404(income_id)
 
@@ -84,6 +87,7 @@ def update_income(current_user, income_id):
 
 @income_bp.route('/incomes/<int:income_id>', methods=['DELETE'])
 @token_required
+@csrf_protect
 def delete_income(current_user, income_id):
     income = Income.query.get_or_404(income_id)
 
