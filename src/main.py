@@ -8,6 +8,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from flask import Flask, send_from_directory, jsonify, render_template
+from flask_wtf.csrf import CSRFProtect, generate_csrf, CSRFError
 from src.models.user import db
 from flask_migrate import Migrate
 from src.routes.user import user_bp, login_required
@@ -20,7 +21,10 @@ from flask_cors import CORS
 static_dir = os.path.join(os.path.dirname(__file__), 'static')
 app = Flask(__name__, static_folder=static_dir, template_folder=static_dir)
 app.url_map.strict_slashes = False  # Allow routes with or without trailing slash
+csrf = CSRFProtect()
 CORS(app)  # Enable CORS for all routes
+app.config['WTF_CSRF_CHECK_DEFAULT'] = False
+csrf.init_app(app)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # Register blueprints
@@ -65,6 +69,11 @@ with app.app_context():
         
         db.session.commit()
         print("Default categories created")
+
+@app.route('/api/csrf-token', methods=['GET'])
+def get_csrf_token():
+    token = generate_csrf()
+    return jsonify({'csrf_token': token})
 
 @app.route('/')
 def home():
@@ -128,6 +137,10 @@ def static_files(filename):
         return send_from_directory(app.static_folder, filename)
     else:
         return jsonify({"message": "Resource not found"}), 404
+
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    return jsonify({'message': e.description}), 400
 
 @app.errorhandler(404)
 def not_found(e):

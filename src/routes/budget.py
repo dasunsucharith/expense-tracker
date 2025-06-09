@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from src.csrf_utils import csrf_protect
 from src.models.user import db
 from src.models.budget import Budget
 from src.models.expense import Category, Expense
@@ -69,6 +70,7 @@ def get_budgets(current_user):
 
 @budget_bp.route('/budgets', methods=['POST'])
 @token_required
+@csrf_protect
 def create_budget(current_user):
     data = request.get_json()
     
@@ -109,6 +111,7 @@ def create_budget(current_user):
 
 @budget_bp.route('/budgets/<int:budget_id>', methods=['PUT'])
 @token_required
+@csrf_protect
 def update_budget(current_user, budget_id):
     budget = Budget.query.get_or_404(budget_id)
     
@@ -156,6 +159,7 @@ def update_budget(current_user, budget_id):
 
 @budget_bp.route('/budgets/<int:budget_id>', methods=['DELETE'])
 @token_required
+@csrf_protect
 def delete_budget(current_user, budget_id):
     budget = Budget.query.get_or_404(budget_id)
     

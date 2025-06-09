@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, session, redirect
+from src.csrf_utils import csrf_protect
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
@@ -62,6 +63,7 @@ def login_required(f):
     return decorated_function
 
 @user_bp.route('/register', methods=['POST'])
+@csrf_protect
 def register():
     data = request.get_json()
     
@@ -89,6 +91,7 @@ def register():
     return jsonify({'message': 'User registered successfully'}), 201
 
 @user_bp.route('/login', methods=['POST'])
+@csrf_protect
 def login():
     data = request.get_json()
     
@@ -118,6 +121,7 @@ def get_profile(current_user):
 
 @user_bp.route('/profile', methods=['PUT'])
 @token_required
+@csrf_protect
 def update_profile(current_user):
     data = request.get_json()
     

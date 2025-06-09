@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from src.csrf_utils import csrf_protect
 from src.models.user import db
 from src.models.saving import Saving
 from src.routes.user import token_required
@@ -24,6 +25,7 @@ def get_savings(current_user):
 
 @saving_bp.route('/savings', methods=['POST'])
 @token_required
+@csrf_protect
 def create_saving(current_user):
     data = request.get_json()
 
@@ -51,6 +53,7 @@ def create_saving(current_user):
 
 @saving_bp.route('/savings/<int:saving_id>', methods=['PUT'])
 @token_required
+@csrf_protect
 def update_saving(current_user, saving_id):
     saving = Saving.query.get_or_404(saving_id)
 
@@ -75,6 +78,7 @@ def update_saving(current_user, saving_id):
 
 @saving_bp.route('/savings/<int:saving_id>', methods=['DELETE'])
 @token_required
+@csrf_protect
 def delete_saving(current_user, saving_id):
     saving = Saving.query.get_or_404(saving_id)
 

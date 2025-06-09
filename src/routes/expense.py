@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from src.csrf_utils import csrf_protect
 from src.models.user import db
 from src.models.expense import Expense, Category
 from src.routes.user import token_required
@@ -15,6 +16,7 @@ def get_categories(current_user):
 
 @expense_bp.route('/categories', methods=['POST'])
 @token_required
+@csrf_protect
 def create_category(current_user):
     data = request.get_json()
     
@@ -34,6 +36,7 @@ def create_category(current_user):
 
 @expense_bp.route('/categories/<int:category_id>', methods=['PUT'])
 @token_required
+@csrf_protect
 def update_category(current_user, category_id):
     category = Category.query.get_or_404(category_id)
     data = request.get_json()
@@ -51,6 +54,7 @@ def update_category(current_user, category_id):
 
 @expense_bp.route('/categories/<int:category_id>', methods=['DELETE'])
 @token_required
+@csrf_protect
 def delete_category(current_user, category_id):
     category = Category.query.get_or_404(category_id)
     
@@ -98,6 +102,7 @@ def get_expenses(current_user):
 
 @expense_bp.route('/expenses', methods=['POST'])
 @token_required
+@csrf_protect
 def create_expense(current_user):
     data = request.get_json()
     
@@ -133,6 +138,7 @@ def create_expense(current_user):
 
 @expense_bp.route('/expenses/<int:expense_id>', methods=['PUT'])
 @token_required
+@csrf_protect
 def update_expense(current_user, expense_id):
     expense = Expense.query.get_or_404(expense_id)
     
@@ -166,6 +172,7 @@ def update_expense(current_user, expense_id):
 
 @expense_bp.route('/expenses/<int:expense_id>', methods=['DELETE'])
 @token_required
+@csrf_protect
 def delete_expense(current_user, expense_id):
     expense = Expense.query.get_or_404(expense_id)
     

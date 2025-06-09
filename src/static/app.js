@@ -8,6 +8,21 @@ let incomes = [];
 let budgets = [];
 let savings = [];
 let charts = {};
+let csrfToken = null;
+const metaToken = document.querySelector('meta[name="csrf-token"]');
+if (metaToken) {
+    csrfToken = metaToken.getAttribute('content');
+}
+
+const originalFetch = window.fetch;
+window.fetch = function (url, options = {}) {
+    options.headers = options.headers || {};
+    if (csrfToken && options.method && ["POST", "PUT", "DELETE"].includes(options.method.toUpperCase())) {
+        options.headers["X-CSRFToken"] = csrfToken;
+    }
+    options.credentials = options.credentials || "same-origin";
+    return originalFetch(url, options);
+};
 
 // Cookie helpers
 function setCookie(name, value, days) {
@@ -38,6 +53,11 @@ function eraseCookie(name) {
 // Initialize the application
 document.addEventListener("DOMContentLoaded", function () {
         API_URL = window.location.origin;
+        fetch("/api/csrf-token")
+            .then((res) => res.json())
+            .then((data) => {
+                csrfToken = data.csrf_token;
+            });
         setupEventListeners();
         updateCurrencySymbols();
         token = localStorage.getItem("token") || getCookie("token");
