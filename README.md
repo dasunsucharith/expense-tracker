@@ -11,8 +11,15 @@ This application is a simple Flask based dashboard for managing expenses, budget
    pip install -r requirements.txt
    ```
 
-
 2. Set the necessary environment variables for database access and the Flask secret key.
+
+   **Note:** The `SECRET_KEY` variable must be defined so `/api/csrf-token` works. Example:
+
+   ```bash
+   export SECRET_KEY="your-secret"
+   ```
+
+   Without this variable the endpoint returns `500`.
 
 3. Create the database tables using the migrations:
 

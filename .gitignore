@@ -1,5 +1,18 @@
-.env
-__pycache__
-*.pyc
-.pytest_cache
 
+# Environment files
+.env*
+
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+
+# Test cache
+.pytest_cache/
+
+# Editor directories and OS files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/

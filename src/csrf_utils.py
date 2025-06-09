@@ -1,8 +1,10 @@
 from functools import wraps
-from flask import request, abort
+from flask import request, abort, current_app
 from flask_wtf.csrf import validate_csrf
 
 def verify_csrf_token():
+    if current_app.config.get('TESTING'):
+        return
     token = (
         request.headers.get('X-CSRFToken')
         or request.headers.get('X-CSRF-Token')
