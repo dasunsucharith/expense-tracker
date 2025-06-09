@@ -1,21 +1,18 @@
-# Python virtual environments
-.env
-.venv/
-venv/
 
-# Byte-compiled / optimized / DLL files
+# Environment files
+.env*
+
+# Byte-compiled / cache
 __pycache__/
 *.py[cod]
 
-# Caches and test artifacts
+# Test cache
 .pytest_cache/
-.mypy_cache/
 
-# Distribution / packaging
-build/
-dist/
-*.egg-info/
-.eggs/
-
-# Misc
+# Editor directories and OS files
 .DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
