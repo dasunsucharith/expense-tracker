@@ -43,13 +43,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 migrate = Migrate(app, db)
 
-# Create database tables
+# Initialize default categories when the table is empty
 with app.app_context():
-    db.create_all()
-    
-    # Check if we need to create default categories
+    from sqlalchemy import inspect
     from src.models.expense import Category
-    if Category.query.count() == 0:
+
+    inspector = inspect(db.engine)
+    if inspector.has_table('categories') and Category.query.count() == 0:
         default_categories = [
             {'name': 'Food & Dining', 'color': '#FF5733', 'icon': 'utensils'},
             {'name': 'Transportation', 'color': '#33A8FF', 'icon': 'car'},
