@@ -1,8 +1,22 @@
-`# Expense Calculator Web Dashboard - User Guide
+# Expense Calculator Web Dashboard - User Guide
 
 ## Overview
 
 The Expense Calculator Web Dashboard is a comprehensive financial management tool that helps you track expenses, manage budgets, and visualize your spending patterns. This guide will walk you through all the features and functionality of the dashboard.
+
+## Installation
+1. Create and activate a virtual environment for Python 3.10+.
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Set the environment variables described below and run the app:
+   ```bash
+   python src/main.py
+
+   ```
+
 
 ## Accessing the Dashboard
 

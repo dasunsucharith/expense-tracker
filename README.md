@@ -1,5 +1,6 @@
 # Expense Tracker
 
+
 This application is a simple Flask based dashboard for managing expenses, budgets, incomes and savings.
 
 ## Running the Application
@@ -10,9 +11,11 @@ This application is a simple Flask based dashboard for managing expenses, budget
    pip install -r requirements.txt
    ```
 
+
 2. Set the necessary environment variables for database access and the Flask secret key.
 
 3. Create the database tables using the migrations:
+
 
    ```bash
    export FLASK_APP=src.main:app
