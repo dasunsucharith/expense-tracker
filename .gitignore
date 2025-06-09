@@ -1,5 +1,21 @@
+# Python virtual environments
 .env
-__pycache__
-*.pyc
-.pytest_cache
+.venv/
+venv/
 
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Caches and test artifacts
+.pytest_cache/
+.mypy_cache/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Misc
+.DS_Store
