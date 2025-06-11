@@ -12,57 +12,79 @@ budget_bp = Blueprint('budget', __name__)
 @token_required
 def get_budgets(current_user):
     # Get query parameters for filtering
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
+    start_date_str = request.args.get('start_date')
+    end_date_str = request.args.get('end_date')
     
     # Base query
     query = Budget.query.filter_by(user_id=current_user.id)
     
     # Apply filters if provided
-    if start_date:
+    if start_date_str:
         try:
-            start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
+            start_date_obj = datetime.strptime(start_date_str, '%Y-%m-%d').date()
             query = query.filter(Budget.end_date >= start_date_obj)
         except ValueError:
             return jsonify({'message': 'Invalid start_date format. Use YYYY-MM-DD'}), 400
             
-    if end_date:
+    if end_date_str:
         try:
-            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
+            end_date_obj = datetime.strptime(end_date_str, '%Y-%m-%d').date()
             query = query.filter(Budget.start_date <= end_date_obj)
         except ValueError:
             return jsonify({'message': 'Invalid end_date format. Use YYYY-MM-DD'}), 400
     
     # Order by start_date descending
-    budgets = query.order_by(Budget.start_date.desc()).all()
+    user_budgets = query.order_by(Budget.start_date.desc()).all()
+
+    if not user_budgets:
+        return jsonify([]), 200
+
+    # Collect all unique, non-null category_ids from user_budgets
+    unique_category_ids = list(set(b.category_id for b in user_budgets if b.category_id))
+
+    categories_map = {}
+    if unique_category_ids:
+        categories = Category.query.filter(Category.id.in_(unique_category_ids)).all()
+        categories_map = {cat.id: cat for cat in categories}
+
+    # Determine the earliest start_date and latest end_date from user_budgets
+    min_start_date = min(b.start_date for b in user_budgets)
+    max_end_date = max(b.end_date for b in user_budgets)
+
+    # Fetch all relevant Expense objects
+    # Ensure that if min_start_date or max_end_date are None (e.g. no budgets), this query doesn't fail.
+    # However, we already checked for `not user_budgets`, so min/max will be valid here.
+    relevant_expenses = Expense.query.filter(
+        Expense.user_id == current_user.id,
+        Expense.date >= min_start_date,
+        Expense.date <= max_end_date
+    ).all()
     
-    # Enhance budget data with actual spending
     enhanced_budgets = []
-    for budget in budgets:
+    for budget in user_budgets:
         budget_dict = budget.to_dict()
         
-        # Calculate actual spending for this budget period
-        expense_query = Expense.query.filter_by(user_id=current_user.id)
-        expense_query = expense_query.filter(Expense.date >= budget.start_date)
-        expense_query = expense_query.filter(Expense.date <= budget.end_date)
-        
-        # If budget is for specific category, filter by category
-        if budget.category_id:
-            expense_query = expense_query.filter_by(category_id=budget.category_id)
+        # Filter relevant_expenses for this specific budget
+        current_budget_expenses = []
+        for expense in relevant_expenses:
+            if expense.date >= budget.start_date and \
+               expense.date <= budget.end_date:
+                if budget.category_id is not None: # Budget is for a specific category
+                    if expense.category_id == budget.category_id:
+                        current_budget_expenses.append(expense)
+                else: # Budget is for all categories (overall budget)
+                    current_budget_expenses.append(expense)
             
-        # Calculate total spending
-        total_spent = sum(expense.amount for expense in expense_query.all())
+        total_spent = sum(expense.amount for expense in current_budget_expenses)
         
-        # Add to budget dict
         budget_dict['spent'] = total_spent
         budget_dict['remaining'] = budget.amount - total_spent
         budget_dict['percentage_used'] = (total_spent / budget.amount * 100) if budget.amount > 0 else 0
         
-        # Add category info if applicable
-        if budget.category_id:
-            category = Category.query.get(budget.category_id)
-            if category:
-                budget_dict['category'] = category.to_dict()
+        if budget.category_id and budget.category_id in categories_map:
+            budget_dict['category'] = categories_map[budget.category_id].to_dict()
+        elif budget.category_id: # category_id was set but not found in map (should not happen if DB is consistent)
+            budget_dict['category'] = None
         
         enhanced_budgets.append(budget_dict)
     
@@ -95,8 +117,15 @@ def create_budget(current_user):
         if not category:
             return jsonify({'message': 'Category not found'}), 404
     
+    try:
+        amount = float(data['amount'])
+    except ValueError:
+        return jsonify({'message': 'Invalid amount format. Amount must be a number.'}), 400
+    if amount <= 0:
+        return jsonify({'message': 'Amount must be a positive number.'}), 400
+
     new_budget = Budget(
-        amount=float(data['amount']),
+        amount=amount,
         name=data['name'],
         start_date=start_date,
         end_date=end_date,
@@ -122,7 +151,12 @@ def update_budget(current_user, budget_id):
     data = request.get_json()
     
     if data.get('amount'):
-        budget.amount = float(data['amount'])
+        try:
+            budget.amount = float(data['amount'])
+        except ValueError:
+            return jsonify({'message': 'Invalid amount format. Amount must be a number.'}), 400
+        if budget.amount <= 0:
+            return jsonify({'message': 'Amount must be a positive number.'}), 400
     if data.get('name'):
         budget.name = data['name']
     
