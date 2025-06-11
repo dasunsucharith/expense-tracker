@@ -39,8 +39,15 @@ def create_saving(current_user):
         except ValueError:
             return jsonify({'message': 'Invalid date format. Use YYYY-MM-DD'}), 400
 
+    try:
+        amount = float(data['amount'])
+    except ValueError:
+        return jsonify({'message': 'Invalid amount format. Amount must be a number.'}), 400
+    if amount <= 0:
+        return jsonify({'message': 'Amount must be a positive number.'}), 400
+
     new_saving = Saving(
-        amount=float(data['amount']),
+        amount=amount,
         description=data.get('description'),
         date=saving_date,
         user_id=current_user.id
@@ -63,7 +70,12 @@ def update_saving(current_user, saving_id):
     data = request.get_json()
 
     if data.get('amount'):
-        saving.amount = float(data['amount'])
+        try:
+            saving.amount = float(data['amount'])
+        except ValueError:
+            return jsonify({'message': 'Invalid amount format. Amount must be a number.'}), 400
+        if saving.amount <= 0:
+            return jsonify({'message': 'Amount must be a positive number.'}), 400
     if data.get('description') is not None:
         saving.description = data['description']
     if data.get('date'):

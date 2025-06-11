@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from src.csrf_utils import csrf_protect
 from src.models.user import db
 from src.models.expense import Expense, Category
+from src.models.budget import Budget
 from src.routes.user import token_required
 from datetime import datetime
 
@@ -59,8 +60,8 @@ def delete_category(current_user, category_id):
     category = Category.query.get_or_404(category_id)
     
     # Check if category is in use
-    if Expense.query.filter_by(category_id=category_id).first():
-        return jsonify({'message': 'Cannot delete category that is in use'}), 400
+    if Expense.query.filter_by(category_id=category_id).first() or Budget.query.filter_by(category_id=category_id).first():
+        return jsonify({'message': 'Cannot delete category that is in use by expenses or budgets'}), 400
     
     db.session.delete(category)
     db.session.commit()
@@ -122,8 +123,15 @@ def create_expense(current_user):
         except ValueError:
             return jsonify({'message': 'Invalid date format. Use YYYY-MM-DD'}), 400
     
+    try:
+        amount = float(data['amount'])
+    except ValueError:
+        return jsonify({'message': 'Invalid amount format. Amount must be a number.'}), 400
+    if amount <= 0:
+        return jsonify({'message': 'Amount must be a positive number.'}), 400
+
     new_expense = Expense(
-        amount=float(data['amount']),
+        amount=amount,
         description=data.get('description', ''),
         payment_method=data.get('payment_method'),
         date=expense_date,
@@ -149,7 +157,12 @@ def update_expense(current_user, expense_id):
     data = request.get_json()
     
     if data.get('amount'):
-        expense.amount = float(data['amount'])
+        try:
+            expense.amount = float(data['amount'])
+        except ValueError:
+            return jsonify({'message': 'Invalid amount format. Amount must be a number.'}), 400
+        if expense.amount <= 0:
+            return jsonify({'message': 'Amount must be a positive number.'}), 400
     if data.get('description') is not None:
         expense.description = data['description']
     if data.get('payment_method') is not None:

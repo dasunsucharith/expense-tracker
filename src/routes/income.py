@@ -42,8 +42,15 @@ def create_income(current_user):
         except ValueError:
             return jsonify({'message': 'Invalid date format. Use YYYY-MM-DD'}), 400
 
+    try:
+        amount = float(data['amount'])
+    except ValueError:
+        return jsonify({'message': 'Invalid amount format. Amount must be a number.'}), 400
+    if amount <= 0:
+        return jsonify({'message': 'Amount must be a positive number.'}), 400
+
     new_income = Income(
-        amount=float(data['amount']),
+        amount=amount,
         description=data.get('description'),
         income_type=data['income_type'],
         other_source=data.get('other_source'),
@@ -68,7 +75,12 @@ def update_income(current_user, income_id):
     data = request.get_json()
 
     if data.get('amount'):
-        income.amount = float(data['amount'])
+        try:
+            income.amount = float(data['amount'])
+        except ValueError:
+            return jsonify({'message': 'Invalid amount format. Amount must be a number.'}), 400
+        if income.amount <= 0:
+            return jsonify({'message': 'Amount must be a positive number.'}), 400
     if data.get('description') is not None:
         income.description = data['description']
     if data.get('income_type'):
