@@ -84,9 +84,10 @@ def test_expense_crud(client, auth_data, new_category_fixture):
     assert resp_delete.status_code == 200
     assert resp_delete.get_json()['message'] == 'Expense deleted successfully'
 
-    # Verify expense is deleted (e.g., trying to get it by ID returns 404)
-    resp_get = client.get(f'/api/expense/expenses/{expense_id}', headers=headers)
-    assert resp_get.status_code == 404
+    # Verify expense is deleted
+    resp_list_after_delete = client.get('/api/expense/expenses', headers=headers)
+    assert resp_list_after_delete.status_code == 200
+    assert not any(e['id'] == expense_id for e in resp_list_after_delete.get_json())
 
 
 # --- New Tests for Amount Validation ---

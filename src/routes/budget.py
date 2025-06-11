@@ -96,7 +96,8 @@ def get_budgets(current_user):
 def create_budget(current_user):
     data = request.get_json()
     
-    if not data or not data.get('amount') or not data.get('name') or not data.get('start_date') or not data.get('end_date'):
+    if not data or 'amount' not in data or 'name' not in data or \
+       'start_date' not in data or 'end_date' not in data:
         return jsonify({'message': 'Missing required fields'}), 400
     
     # Parse dates
@@ -150,7 +151,7 @@ def update_budget(current_user, budget_id):
     
     data = request.get_json()
     
-    if data.get('amount'):
+    if 'amount' in data: # Changed from data.get('amount')
         try:
             budget.amount = float(data['amount'])
         except ValueError:

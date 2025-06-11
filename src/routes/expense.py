@@ -107,7 +107,8 @@ def get_expenses(current_user):
 def create_expense(current_user):
     data = request.get_json()
     
-    if not data or not data.get('amount') or not data.get('category_id'):
+    # Check for presence of required fields
+    if not data or 'amount' not in data or 'category_id' not in data:
         return jsonify({'message': 'Amount and category are required'}), 400
     
     # Validate category exists
@@ -156,7 +157,7 @@ def update_expense(current_user, expense_id):
     
     data = request.get_json()
     
-    if data.get('amount'):
+    if 'amount' in data: # Changed from data.get('amount')
         try:
             expense.amount = float(data['amount'])
         except ValueError:

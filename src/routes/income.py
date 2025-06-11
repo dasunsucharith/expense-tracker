@@ -32,7 +32,7 @@ def get_incomes(current_user):
 def create_income(current_user):
     data = request.get_json()
 
-    if not data or not data.get('amount') or not data.get('income_type'):
+    if not data or 'amount' not in data or 'income_type' not in data:
         return jsonify({'message': 'Amount and income_type are required'}), 400
 
     income_date = datetime.utcnow().date()
@@ -74,7 +74,7 @@ def update_income(current_user, income_id):
 
     data = request.get_json()
 
-    if data.get('amount'):
+    if 'amount' in data: # Changed from data.get('amount')
         try:
             income.amount = float(data['amount'])
         except ValueError:

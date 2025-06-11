@@ -29,7 +29,7 @@ def get_savings(current_user):
 def create_saving(current_user):
     data = request.get_json()
 
-    if not data or not data.get('amount'):
+    if not data or 'amount' not in data:
         return jsonify({'message': 'Amount is required'}), 400
 
     saving_date = datetime.utcnow().date()
@@ -69,7 +69,7 @@ def update_saving(current_user, saving_id):
 
     data = request.get_json()
 
-    if data.get('amount'):
+    if 'amount' in data: # Changed from data.get('amount')
         try:
             saving.amount = float(data['amount'])
         except ValueError:
